@@ -13,8 +13,43 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  password String
+  id        String    @id @default(cuid())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  
+  // Relations
+  projects  Project[]
+  refreshTokens RefreshToken[]
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  expireAt  DateTime 
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  tasks     Task[]   // One project can have multiple tasks
+}
+
+model Task {
+  id        String   @id @default(cuid())
+  name      String
+  
+  // Relations
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }

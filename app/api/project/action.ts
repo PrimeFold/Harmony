@@ -1,0 +1,126 @@
+import { userId} from "@/app/lib/jwt";
+import { prisma } from "@/app/lib/prisma";
+import { projectSchema } from "@/app/utils/zod";
+
+
+
+
+export const createProject = async(name:string,deadline:Date)=>{
+    
+    const id = userId;
+
+    if(!id){
+        throw new Error("Unauthorized")
+    }
+
+    const result = projectSchema.safeParse({name});
+    if(!result.success){
+        return{
+            success:false,
+            message:"Enter a valid project name"
+        }
+    }
+
+    try {
+        
+        const project = await prisma.project.create({
+            data:{userId:id,name:name,expireAt:deadline}
+        })
+
+        if(!project){
+            return{
+                success:false,
+                message:"Couldn't create project . Please Try again.."
+            }
+        }
+
+        return{
+            success:true,
+            message:"Project created !"
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:"Internal Server Error"
+        }
+    }
+}
+
+export const renameProject = async(newName:string,projectId:string)=>{
+
+    try {
+        
+        const existingProject = await prisma.project.findFirst({
+            where:{id:projectId}
+        })
+
+        if(!existingProject){
+            return{
+                success:false,
+                message:"Project doesn't exist"
+            }
+        }
+
+        const renamedProject = await prisma.project.update({
+            where:{id:projectId},
+            data:{name:newName},
+            select:{
+                id:true,
+                name:true,
+                tasks:true,
+                createdAt:true
+            }
+        })
+
+        return{
+            success:true,
+            message:"Project renamed ",
+            data:renamedProject
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:"Internal Server Error.."
+        }
+    }
+
+}
+
+export const deleteProject = async(projectId:string)=>{
+    try {
+        const existingProject = await prisma.project.findFirst({
+            where:{id:projectId}
+        })
+
+        if(!existingProject){
+            return{
+                success:false,
+                message:"Project doesn't exist"
+            }
+        }
+
+        const deleted = await prisma.project.delete({
+            where:{id:projectId}
+        })
+
+        if(!deleted){
+            
+            throw new Error("Error deleting the project")
+        }
+
+
+        return{
+            success:true,
+            message:"Project deleted"
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:"Internal Server Error"
+        }
+    }
+}
+
