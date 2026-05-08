@@ -4,9 +4,10 @@ import {
   statusPillClass,
   type Project,
 } from "@/lib/halftone-data";
-
-import { Stat } from "./Stat";
 import { DateBlock } from "./DateBlock";
+import { Stat } from "./Stat";
+
+
 
 type Props = {
   project: Project;

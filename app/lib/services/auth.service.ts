@@ -1,7 +1,6 @@
 import { verifyAccessToken } from "../jwt";
 import { prisma } from "../prisma";
 
-
 export async function getAuthenticatedUser(token: string) {
   const payload = await verifyAccessToken(token);
   if (!payload) return null;

@@ -1,4 +1,3 @@
-// components/auth/AuthGuard.tsx
 import { generateRefreshToken } from "@/app/api/auth/action";
 import { getAuthenticatedUser } from "@/app/lib/services/auth.service";
 import { cookies } from "next/headers";
@@ -21,8 +20,7 @@ export default async function AuthGuard({ children }: { children: (user: any) =>
       }
     }
   
-    if (!user) redirect("/sign-in");
+    if (!user) redirect("/auth/signIn");
   
-    // Pass the user object back to the layout
     return <>{children(user)}</>;
 }

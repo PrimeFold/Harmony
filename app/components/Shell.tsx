@@ -1,26 +1,28 @@
 "use client";
-
+import { UserDock } from "./UserDock";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { type User } from "../types/user";
 
 interface ShellProps {
+  user: User;
   children: ReactNode;
   active?: "app" | "about";
   variant?: "landing" | "app";
 }
 
-export function Shell({ children, active, variant = "app" }: ShellProps) {
+export function Shell({ user, children, active, variant = "app" }: ShellProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <TopBar active={active} variant={variant} />
+      <TopBar user={user} active={active} variant={variant} />
       <main className="flex-1">{children}</main>
       <FootBar />
     </div>
   );
 }
 
-function TopBar({ active, variant }: { active?: ShellProps["active"]; variant: "landing" | "app" }) {
+function TopBar({ user, active, variant }: { user: User; active?: ShellProps["active"]; variant: "landing" | "app" }) {
   return (
     <header className="nothing-hairline-b sticky top-0 z-40 bg-background/85 backdrop-blur">
       <div className="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">
@@ -52,23 +54,48 @@ function TopBar({ active, variant }: { active?: ShellProps["active"]; variant: "
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/auth/signIn" className="nothing-btn nothing-btn--ghost">Sign in</Link>
-          <Link href="/auth/signUp" className="nothing-btn nothing-btn--signal">Get started</Link>
+          {/* Conditional Rendering based on user existence */}
+          {user?.id ? <AuthedCluster user={user} /> : <GuestCluster />}
         </div>
       </div>
     </header>
   );
 }
 
-function NavLink({
-  href,
-  label,
-  isActive,
-}: {
-  href: "/app";
-  label: string;
-  isActive?: boolean;
-}) {
+function GuestCluster() {
+  return (
+    <>
+      <Link href="/auth/signIn" className="nothing-btn nothing-btn--ghost">Sign in</Link>
+      <Link href="/auth/signUp" className="nothing-btn nothing-btn--signal">Get started</Link>
+    </>
+  );
+}
+
+function AuthedCluster({ user }: { user: User }) {
+  return (
+    <>
+      <Link
+        href="/dashboard/settings"
+        className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 nothing-hairline rounded-sm hover:border-signal transition-colors group"
+        aria-label="Account"
+      >
+        <span className="nothing-signal-dot" aria-hidden />
+        <span className="nothing-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute group-hover:text-ink">
+          {user.email}
+        </span>
+      </Link>
+      <Link
+        href="/auth/signIn"
+        className="nothing-btn nothing-btn--ghost"
+        aria-label="Sign out"
+      >
+        Sign out ⏻
+      </Link>
+    </>
+  );
+}
+
+function NavLink({ href, label, isActive, }: { href: "/app"; label: string; isActive?: boolean; }) {
   return (
     <Link
       href={href}
@@ -95,16 +122,15 @@ function FootBar() {
 }
 
 export function DotMark({ size = 22 }: { size?: number }) {
-  // 5x5 dot matrix "H" mark
   const pattern = [
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
   ];
   return (
-    <div className="grid grid-cols-5 gap-[2px]" style={{ width: size, height: size }} aria-hidden>
+    <div className="grid grid-cols-5 gap-0.5" style={{ width: size, height: size }} aria-hidden>
       {pattern.flat().map((v, i) => (
         <span
           key={i}

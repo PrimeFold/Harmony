@@ -2,77 +2,75 @@
 
 import { useState } from "react";
 
-import {
-  PROJECT_STATUSES,
-  type Project,
-  type ProjectStatus,
-} from "@/lib/halftone-data";
-
 import { Modal } from "@/app/components/Modal";
+import { createProject, getAllProjects } from "@/app/api/project/action";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { User } from "@/app/types/user";
+import { Project } from "@/app/types/project";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  onCreate: (p: Project) => void;
+  user:User
 };
 
 export function NewProjectModal({
+  user,
   open,
   onClose,
-  onCreate,
 }: Props) {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
-  const [status, setStatus] =
-    useState<ProjectStatus>("draft");
-
   const [start, setStart] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [description,setDescription] = useState("")
+  type ProjectStatus = Project["status"];
+
+  const statuses: ProjectStatus[] = [
+    "active",
+    "paused",
+    "cancelled",
+    "completed",
+  ];
+  const [status, setStatus] = useState<ProjectStatus>("active");
 
   const reset = () => {
     setName("");
     setDesc("");
-    setStatus("draft");
+    setStatus("active");
     setStart("");
     setDeadline("");
+    setDescription("");
   };
+  const queryClient = useQueryClient();
+  const deadlineAsDate = new Date(deadline)
+
+  const {data: projectResponse , isLoading , isError} = useQuery({
+    queryKey:['projects',user.id],
+    queryFn:()=>getAllProjects(user.id)
+  })
+
+  const projects = projectResponse?.success ? projectResponse.data: [];
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => createProject(name, deadlineAsDate, user.id, description), 
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects", user.id] });
+      reset();
+      onClose(); 
+    }
+  });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!deadline) {
+      const defaultDate = new Date();
+      defaultDate.setDate(defaultDate.getDate() + 30);
+      setDeadline(defaultDate.toISOString().slice(0, 10));
+    }
 
     if (!name.trim()) return;
-
-    onCreate({
-      id: `p-${Math.random()
-        .toString(36)
-        .slice(2, 6)}`,
-
-      name: name.trim(),
-
-      description: desc.trim() || "—",
-
-      status,
-
-      start:
-        start ||
-        new Date()
-          .toISOString()
-          .slice(0, 10),
-
-      deadline:
-        deadline ||
-        new Date(
-          Date.now() +
-            1000 * 60 * 60 * 24 * 30
-        )
-          .toISOString()
-          .slice(0, 10),
-
-      members: 1,
-      tasks: [],
-    });
-
-    reset();
+    mutate();
   };
 
   return (
@@ -99,6 +97,18 @@ export function NewProjectModal({
             }
             placeholder="Project name"
           />
+
+          <label className="nothing-label">
+            Description
+          </label>
+          <input
+            className="nothing-input"
+            value={description}
+            onChange={(e) =>
+              setName(e.target.value)
+            }
+            placeholder="Project Description"
+          />
         </div>
 
         <div>
@@ -117,36 +127,36 @@ export function NewProjectModal({
         </div>
 
         <div>
-          <label className="nothing-label">
-            Status
-          </label>
+        <label className="nothing-label">
+          Status
+        </label>
 
-          <div className="flex flex-wrap gap-2">
-            {PROJECT_STATUSES.map((s:any) => {
-              const selected = status === s;
-
-              return (
-                <button
-                  type="button"
-                  key={s}
-                  onClick={() => setStatus(s)}
-                  className="nothing-mono text-[10px] uppercase tracking-[0.16em] px-3 py-1.5 border"
-                  style={{
-                    borderColor: selected
-                      ? "var(--color-signal)"
-                      : "var(--color-border)",
-
-                    color: selected
-                      ? "var(--color-signal)"
-                      : "var(--color-ink-mute)",
-                  }}
-                >
-                  {s}
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex flex-wrap gap-2">
+          {statuses.map((s) => {
+            const selected = status === s;
+          
+            return (
+              <button
+                type="button"
+                key={s}
+                onClick={() => setStatus(s)}
+                className="nothing-mono text-[10px] uppercase tracking-[0.16em] px-3 py-1.5 border"
+                style={{
+                  borderColor: selected
+                    ? "var(--color-signal)"
+                    : "var(--color-border)",
+                
+                  color: selected
+                    ? "var(--color-signal)"
+                    : "var(--color-ink-mute)",
+                }}
+              >
+                {s}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -184,6 +194,7 @@ export function NewProjectModal({
           <button
             type="submit"
             className="nothing-btn nothing-btn--signal flex-1"
+            disabled={isPending}
           >
             Create ↗
           </button>

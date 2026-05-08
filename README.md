@@ -373,6 +373,8 @@ TanStack Query handles:
 
 The separation keeps authentication infrastructure independent from application data flow.
 
+
+
 ---
 
 ### Final architecture

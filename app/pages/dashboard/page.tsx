@@ -2,55 +2,33 @@
 
 import { useMemo, useState } from "react";
 
-import {
-  PROJECT_STATUSES,
-  seedProjects,
-  type Project,
-  type ProjectStatus,
-} from "@/lib/halftone-data";
 
-import { Shell } from "@/app/components/Shell";
 
 import { DashboardHeader } from "./components/DashboardHeader";
 
-import { ProjectGrid } from "./components/ProjectGrid";
-import { FilterBar } from "./components/Filterbar";
-import { NewProjectModal } from "./components/NewProjectModal";
+import { ProjectGrid } from "./components/project/ProjectGrid";
 
+import { NewProjectModal } from "./components/project/NewProjectModal";
+import { FilterBar } from "./components/project/Filterbar";
+import { User } from "@/app/types/user";
+import { Project } from "@/app/types/project";
 
+type ProjectStatus = Project["status"];
 export type Filter = "all" | ProjectStatus;
 
-export default function DashboardPage() {
-  const [projects, setProjects] = useState<Project[]>(seedProjects);
+export default function DashboardPage({user}:{user:User}) {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"deadline" | "start" | "name">("deadline");
   const [modal, setModal] = useState(false);
-
-  const visible = useMemo(() => {
-    let arr = projects.filter((p) =>
-      filter === "all" ? true : p.status === filter
-    );
-
-    if (search) {
-      const q = search.toLowerCase();
-      arr = arr.filter((p) => p.name.toLowerCase().includes(q));
-    }
-
-    arr = [...arr].sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name);
-      return a[sortBy].localeCompare(b[sortBy]);
-    });
-
-    return arr;
-  }, [projects, filter, search, sortBy]);
 
   const counts = useMemo(() => {
     const c: Record<Filter, number> = {
       all: projects.length,
       active: 0,
       paused: 0,
-      draft: 0,
+      cancelled:0,
       completed: 0,
     };
 
@@ -60,14 +38,16 @@ export default function DashboardPage() {
   }, [projects]);
 
   return (
-    <Shell active="app">
-      <DashboardHeader
-        projectsCount={projects.length}
-        search={search}
-        setSearch={setSearch}
-        onNewProject={() => setModal(true)}
-      />
+    
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <DashboardHeader
+          projectsCount={projects.length}
+          search={search}
+          setSearch={setSearch}
+          onNewProject={() => setModal(true)}
+        />
 
+        
       <FilterBar
         filter={filter}
         setFilter={setFilter}
@@ -76,16 +56,15 @@ export default function DashboardPage() {
         counts={counts}
       />
 
-      <ProjectGrid projects={visible} />
+      <ProjectGrid user={user} />
 
       <NewProjectModal
         open={modal}
-        onClose={() => setModal(false)}
-        onCreate={(p) => {
-          setProjects((arr) => [p, ...arr]);
-          setModal(false);
-        }}
+        onClose={() =>
+          setModal(false)
+        }
+        user={user}
       />
-    </Shell>
+    </div>
   );
 }

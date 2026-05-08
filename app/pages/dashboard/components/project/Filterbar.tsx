@@ -2,8 +2,9 @@ import {
   PROJECT_STATUSES,
   type ProjectStatus,
 } from "@/lib/halftone-data";
+import { Filter } from "../../page";
 
-import type { Filter } from "../page";
+
 
 type Props = {
   filter: Filter;

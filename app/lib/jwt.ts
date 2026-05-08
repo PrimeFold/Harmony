@@ -1,22 +1,4 @@
 import { SignJWT, jwtVerify } from "jose";
-import jwt from 'jsonwebtoken'
-import { cookies } from "next/headers";
-
-const cookieStore = await cookies()
-const cookietoken = cookieStore.get('access-token')?.value;
-
-if(!cookietoken){
-  throw new Error("Unauthorized")
-}
-
-const decoded = jwt.verify(cookietoken,process.env.JWT_SECRET!);
-
-if (typeof decoded === "string" || !decoded.id) {
-    throw new Error("Invalid token");
-}
-
-export const userId = decoded.id;
-
 
 
 const secret = new TextEncoder().encode(
@@ -43,6 +25,7 @@ export const signAccessToken = async (payload: { userId: string }) => {
 };
 
 export const verifyAccessToken = async (token: string) => {
+
   try {
     const { payload } = await jwtVerify(token, secret);
     return payload as { userId: string };

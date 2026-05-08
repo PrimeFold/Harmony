@@ -30,26 +30,15 @@ model User {
   
   // Relations
   projects       Project[]       // Projects owned by the user
-  projectMembers ProjectMember[] // Projects where the user is a member
   refreshTokens  RefreshToken[]
 }
 
-model ProjectMember {
-  id        String   @id @default(cuid())
-  role      String   @default("MEMBER") 
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId String
-
-  @@unique([userId, projectId])
-}
 
 model Project {
   id        String   @id @default(cuid())
   name      String
+  description String
   status    ProjectStatus @default(active)
-  members   ProjectMember[]
   createdAt DateTime @default(now())
   expireAt  DateTime 
   

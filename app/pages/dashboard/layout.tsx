@@ -1,5 +1,6 @@
 import AuthGuard from "@/app/pages/dashboard/components/AuthGuard";
 import { Shell } from "@/app/components/Shell";
+import QueryProvider from "@/app/providers/QueryProvider";
 
 
 export default function DashboardLayout({
@@ -8,12 +9,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthGuard>
-      <Shell>
-        <main className="p-4">
-          {children}
-        </main>
-      </Shell>
-    </AuthGuard>
+    <QueryProvider>
+      <AuthGuard>
+        {(user)=>(
+          <Shell user={user} variant="app" active="app" >
+            {children}
+          </Shell>
+        )}
+      </AuthGuard>
+    </QueryProvider>
   );
 }

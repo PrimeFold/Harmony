@@ -1,13 +1,11 @@
-import { userId} from "@/app/lib/jwt";
+
 import { prisma } from "@/app/lib/prisma";
 import { projectSchema } from "@/app/utils/zod";
 
 
-export const createProject = async(name:string,deadline:Date)=>{
+export const createProject = async(name:string,deadline:Date,userId:string,description:string)=>{
     
-    const id = userId;
-
-    if(!id){
+    if(!userId){
         throw new Error("Unauthorized")
     }
 
@@ -22,7 +20,15 @@ export const createProject = async(name:string,deadline:Date)=>{
     try {
         
         const project = await prisma.project.create({
-            data:{userId:id,name:name,expireAt:deadline}
+            data:{userId:userId,name:name,expireAt:deadline,createdAt:new Date(Date.now()),description:description},
+            select:{
+                id:true,
+                name:true,
+                description:true,
+                expireAt:true,
+                createdAt:true,
+                status:true
+            }
         })
 
         if(!project){
@@ -34,7 +40,8 @@ export const createProject = async(name:string,deadline:Date)=>{
 
         return{
             success:true,
-            message:"Project created !"
+            message:"Project created !",
+            data:project
         }
 
     } catch (error) {
@@ -122,17 +129,21 @@ export const deleteProject = async(projectId:string)=>{
     }
 }
 
-export const getAllProjects = async()=>{
-    const id  = userId;
+export const getAllProjects = async(userId:string)=>{
+    
     try {
         
         const projects = await prisma.project.findMany({
-            where:{userId:id},
+            where:{userId:userId},
             select:{
                 id:true,
                 name:true,
+                description:true,
                 createdAt:true,
-                tasks:true
+                expireAt:true,
+                tasks:true,
+                status:true,
+
             }
         })
 
@@ -167,8 +178,11 @@ export const getProjectById = async(projectId:string)=>{
             select:{
                 id:true,
                 name:true,
+                description:true,
                 createdAt:true,
-                tasks:true
+                expireAt:true,
+                tasks:true,
+                status:true,
             }
         })
 
