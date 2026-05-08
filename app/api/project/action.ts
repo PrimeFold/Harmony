@@ -124,3 +124,78 @@ export const deleteProject = async(projectId:string)=>{
     }
 }
 
+export const getAllProjects = async()=>{
+    const id  = userId;
+    try {
+        
+        const projects = await prisma.project.findMany({
+            where:{userId:id},
+            select:{
+                id:true,
+                name:true,
+                createdAt:true,
+                tasks:true
+            }
+        })
+
+        if(!projects){
+            return{
+                success:true,
+                message:"No projects found!"
+            }
+        }
+
+        return{
+            success:true,
+            message:"Projects found !",
+            data:projects
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:"Internal Server found .."
+        }
+    }
+
+}
+
+export const getProjectById = async(projectId:string)=>{
+    
+    try {
+        
+        const project = await prisma.project.findFirst({
+            where:{id:projectId},
+            select:{
+                id:true,
+                name:true,
+                createdAt:true,
+                tasks:true
+            }
+        })
+
+        if(!project){
+            return{
+                success:true,
+                message:"Poject not found"
+            }
+        }
+
+        return{
+            success:true,
+            message:"Project found!",
+            data:project
+        }
+
+    } catch (error) {
+        throw new Error("Error fetching project")
+
+    }
+
+
+}
+
+
+
+
+
