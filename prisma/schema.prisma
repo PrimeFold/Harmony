@@ -12,6 +12,15 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ProjectStatus {
+  active
+  paused
+  completed
+  cancelled
+}
+
+
+
 model User {
   id        String    @id @default(cuid())
   username  String    @unique
@@ -20,27 +29,40 @@ model User {
   createdAt DateTime  @default(now())
   
   // Relations
-  projects  Project[]
-  refreshTokens RefreshToken[]
+  projects       Project[]       // Projects owned by the user
+  projectMembers ProjectMember[] // Projects where the user is a member
+  refreshTokens  RefreshToken[]
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  role      String   @default("MEMBER") 
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+
+  @@unique([userId, projectId])
 }
 
 model Project {
   id        String   @id @default(cuid())
   name      String
+  status    ProjectStatus @default(active)
+  members   ProjectMember[]
   createdAt DateTime @default(now())
   expireAt  DateTime 
   
-  // Relations
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  tasks     Task[]   // One project can have multiple tasks
+  tasks     Task[]   
 }
 
 model Task {
   id        String   @id @default(cuid())
   name      String
+  status    ProjectStatus @default(active)
   
-  // Relations
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
 }
@@ -53,3 +75,4 @@ model RefreshToken {
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
+

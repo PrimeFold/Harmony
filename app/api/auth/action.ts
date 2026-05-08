@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import { signAccessToken,signRefreshToken, verifyRefreshToken} from "@/app/lib/jwt"; 
 import bcrypt from 'bcrypt' 
 import { loginSchema, signupSchema } from "@/app/utils/zod";
-import { success } from "zod";
 
 export const signUpAction = async (formData: FormData) => {
 
@@ -204,14 +203,17 @@ export const generateRefreshToken = async()=>{
     maxAge: 60 * 15
   })
 
+  return{
+    success:true,
+    message:"token rotated , new access token sent"
+  }
 
   } catch (error) {
     return{
       success:false,
-      message:"Failed to generate refresh token"
+      message:"Failed to rotate token.."
     }
   }
-
 
 }
 

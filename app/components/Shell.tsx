@@ -27,7 +27,7 @@ function TopBar({ active, variant }: { active?: ShellProps["active"]; variant: "
         <Link href="/" className="flex items-center gap-3">
           <DotMark />
           <span className="nothing-mono text-xs uppercase tracking-[0.22em]">
-            Halftone
+            Harmony
           </span>
           <span
             className="nothing-mono text-[9px] uppercase tracking-[0.22em] px-1.5 py-0.5 ml-1"
@@ -52,8 +52,8 @@ function TopBar({ active, variant }: { active?: ShellProps["active"]; variant: "
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/pages/auth/signIn" className="nothing-btn nothing-btn--ghost">Sign in</Link>
-          <Link href="/pages/auth/signUp" className="nothing-btn nothing-btn--signal">Get started</Link>
+          <Link href="/auth/signIn" className="nothing-btn nothing-btn--ghost">Sign in</Link>
+          <Link href="/auth/signUp" className="nothing-btn nothing-btn--signal">Get started</Link>
         </div>
       </div>
     </header>
@@ -84,7 +84,7 @@ function FootBar() {
   return (
     <footer className="nothing-hairline-t">
       <div className="mx-auto max-w-7xl px-6 h-12 flex items-center justify-between text-[11px] nothing-mono text-muted-foreground">
-        <span>halftone · build 0426</span>
+        <span>Harmony · build 0426</span>
         <span className="flex items-center gap-2">
           <span className="nothing-signal-dot" /> system online
         </span>

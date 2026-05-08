@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Library",
-  description: "An app that lets you buy books ",
+  title: "Harmony",
+  description: "A real-time collaborative platform for projects , tasks , anything that you wish to mark as completed !",
 };
 
 export default function RootLayout({

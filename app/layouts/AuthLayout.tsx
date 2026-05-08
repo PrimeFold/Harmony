@@ -20,7 +20,7 @@ export function AuthLayout({ eyebrow, title, subtitle, children, footer }: AuthL
         <Link href="/" className="flex items-center gap-3 mb-16">
           <DotMark />
           <span className="nothing-mono text-xs uppercase tracking-[0.22em]">
-            Halftone
+            Harmony
           </span>
         </Link>
 

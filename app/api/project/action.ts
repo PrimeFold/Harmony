@@ -3,8 +3,6 @@ import { prisma } from "@/app/lib/prisma";
 import { projectSchema } from "@/app/utils/zod";
 
 
-
-
 export const createProject = async(name:string,deadline:Date)=>{
     
     const id = userId;
@@ -42,7 +40,7 @@ export const createProject = async(name:string,deadline:Date)=>{
     } catch (error) {
         return{
             success:false,
-            message:"Internal Server Error"
+            message:(error as Error).message
         }
     }
 }
@@ -82,7 +80,7 @@ export const renameProject = async(newName:string,projectId:string)=>{
     } catch (error) {
         return{
             success:false,
-            message:"Internal Server Error.."
+            message:(error as Error).message
         }
     }
 
@@ -119,7 +117,7 @@ export const deleteProject = async(projectId:string)=>{
     } catch (error) {
         return{
             success:false,
-            message:"Internal Server Error"
+            message:(error as Error).message
         }
     }
 }
@@ -154,7 +152,7 @@ export const getAllProjects = async()=>{
     } catch (error) {
         return{
             success:false,
-            message:"Internal Server found .."
+            message:(error as Error).message
         }
     }
 
@@ -189,13 +187,110 @@ export const getProjectById = async(projectId:string)=>{
 
     } catch (error) {
         throw new Error("Error fetching project")
-
     }
-
-
 }
 
 
+export const markProjectCancelled = async(projectId:string)=>{
+    try {
+        const cancelledProject = await prisma.project.update({
+            where:{id:projectId,status:{not:"completed"}},
+            data:{
+                status:"cancelled"
+            }
+        })
+
+        if(!cancelledProject){
+            throw new Error("Couldn't mark project as cancelled")
+        }
+
+        return{
+            success:true,
+            message:"Project cancelled",
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:(error as Error).message
+        }
+    }
+}
+export const markProjectComplete= async(projectId:string)=>{
+    try {
+        const completedProject = await prisma.project.update({
+            where:{id:projectId,status:{not:"cancelled"}},
+            data:{
+                status:"completed"
+            }
+        })
+
+        if(!completedProject){
+            throw new Error("Couldn't mark project as completed")
+        }
+
+        return{
+            success:true,
+            message:"Project completed",
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:(error as Error).message
+        }
+    }
+}
+export const markProjectPaused= async(projectId:string)=>{
+    try {
+        const pausedProject = await prisma.project.update({
+            where:{id:projectId,status:{not:"cancelled"}},
+            data:{
+                status:"paused"
+            }
+        })
+
+        if(!pausedProject){
+            throw new Error("Couldn't mark project as paused")
+        }
+
+        return{
+            success:true,
+            message:"Project paused",
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:(error as Error).message
+        }
+    }
+}
+export const markProjectActive= async(projectId:string)=>{
+    try {
+        const activeProject = await prisma.project.update({
+            where:{id:projectId,status:{not:"cancelled"}},
+            data:{
+                status:"active"
+            }
+        })
+
+        if(!activeProject){
+            throw new Error("Couldn't mark project as active")
+        }
+
+        return{
+            success:true,
+            message:"Project active",
+        }
+
+    } catch (error) {
+        return{
+            success:false,
+            message:(error as Error).message
+        }
+    }
+}
 
 
 

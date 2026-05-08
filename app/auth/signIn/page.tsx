@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AuthLayout } from "../../../layouts/AuthLayout";
+import { AuthLayout } from "../../layouts/AuthLayout";
 
 export default function SignInPage() {
   return (

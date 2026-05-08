@@ -85,7 +85,7 @@ export default function LandingClient() {
                style={{ background: "var(--color-hairline)" }}>
             {[
               ["00", "Projects", "unlimited"],
-              ["01", "Statuses", "active · paused · draft · done"],
+              ["01", "Statuses", "active · paused ·  completed · cancelled "],
               ["02", "Members", "shared workspace"],
               ["03", "Latency", "0ms · optimistic"],
             ].map(([n, l, v], i) => (
@@ -201,7 +201,7 @@ export default function LandingClient() {
               <span style={{ color: "var(--color-signal)" }}>stop overthinking.</span>
             </h2>
           </div>
-          <Link href="/sign-up" className="nothing-btn nothing-btn--signal">
+          <Link href="/auth/signUp" className="nothing-btn nothing-btn--signal">
             Create account ↗
           </Link>
         </div>
