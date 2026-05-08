@@ -379,4 +379,72 @@
     cursor: pointer;
   }
   .nothing-ctx-item:hover { background: var(--color-surface-2); color: var(--color-signal); }
+
+  .user-dock__btn {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    background: var(--color-ink);
+    color: var(--color-background);
+
+    border: 1px solid var(--color-hairline);
+
+    cursor: pointer;
+
+    box-shadow:
+      0 10px 30px -8px rgba(0, 0, 0, 0.4),
+      0 0 22px -6px var(--color-signal-glow);
+
+    transition:
+      box-shadow 200ms ease,
+      background 160ms ease;
+  }
+
+  .user-dock__btn:hover {
+    box-shadow:
+      0 14px 36px -10px rgba(0, 0, 0, 0.5),
+      0 0 36px -4px var(--color-signal-glow);
+  }
+
+  .user-dock__avatar {
+    font-family: var(--font-mono);
+
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .user-dock__pulse {
+    position: absolute;
+
+    top: 6px;
+    right: 6px;
+
+    width: 6px;
+    height: 6px;
+
+    background: var(--color-signal);
+
+    box-shadow: 0 0 10px var(--color-signal-glow);
+
+    animation:
+      nothing-blink
+      1.6s
+      steps(1, end)
+      infinite;
+  }
+
 }
+
+
+
+
+
+
+
