@@ -4,7 +4,7 @@
 
 A monochrome collaborative workspace focused on clarity, hierarchy, and intentional motion.
 
-`release 0.1` · `learning project`
+`release 0.7` · `learning project`
 
 ---
 
@@ -44,7 +44,7 @@ The backend/data layer is intentionally incomplete for now.
 
 | Surface | Description |
 |---|---|
-| **Authentication** | Sign in · Sign up · Forgot password (UI only) |
+| **Authentication** | Sign in · Sign up · Forgot password  |
 | **Dashboard** | Project listing with filtering, sorting, and search |
 | **Projects** | Dynamic project routes with Kanban task boards |
 | **Tasks** | Inline task creation, status transitions, contextual actions |
@@ -163,15 +163,14 @@ Not to decorate emptiness.
 ## `// 05` — project structure
 
 ```txt
-frontend/
-├── app/
-│   ├── dashboard/
-│   ├── projects/
-│   │   └── [projectId]/
-│   ├── settings/
-│   ├── sign-in/
-│   ├── sign-up/
-│   └── forgot-password/
+app/
+├── dashboard/
+├── projects/
+│   └── [projectId]/
+├── settings/
+├── sign-in/
+├── sign-up/
+├── forgot-password/
 │
 ├── components/
 │   ├── nothing/
@@ -181,19 +180,15 @@ frontend/
 │   │   ├── ThemeToggle.tsx
 │   │   └── UserDock.tsx
 │   │
-│   ├── projects/
 │   └── tasks/
 │
 ├── lib/
-│   ├── harmony-data.ts
 │   └── utils.ts
 │
-├── styles/
-│   └── globals.css
+├── styles.css
 │
-└── public/
+└── 
 ```
-
 ---
 
 ## `// 06` — local setup
@@ -222,7 +217,6 @@ http://localhost:3000
 [■■■■■·····]  component architecture
 [■■········]  backend integration
 [··········]  authentication logic
-[··········]  realtime collaboration
 ```
 
 ---
@@ -233,18 +227,15 @@ http://localhost:3000
 - Task persistence
 - Optimistic mutations
 - Real authentication
-- Realtime sync
 - Activity timelines
 - Drag-and-drop task ordering
-- Presence indicators
 - Mobile interaction refinement
 
 ---
 
-<div align="center">
 
 `signal level: ◉`
 
 **Harmony** — clarity over noise.
 
-</div>
+
