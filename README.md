@@ -1,36 +1,250 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ◉ Harmony
 
-## Getting Started
+**Less interface. More signal.**
 
-First, run the development server:
+A monochrome collaborative workspace focused on clarity, hierarchy, and intentional motion.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+`release 0.1` · `learning project`
+
+---
+
+![stack](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white)
+![stack](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=react-query&logoColor=white)
+![stack](https://img.shields.io/badge/Neon-00E599?style=flat-square&logo=postgresql&logoColor=black)
+![stack](https://img.shields.io/badge/Tailwind_v4-000000?style=flat-square&logo=tailwindcss&logoColor=white)
+![stack](https://img.shields.io/badge/Framer_Motion-000000?style=flat-square&logo=framer&logoColor=white)
+![stack](https://img.shields.io/badge/GSAP-000000?style=flat-square&logo=greensock&logoColor=88CE02)
+
+---
+
+## `// 00` — overview
+
+**Harmony** is a collaborative task-management interface built as a study in reduction.
+
+Hairline borders.  
+Monospaced hierarchy.  
+Dot-grid surfaces.  
+One red signal accent reserved only for meaningful interaction.
+
+The project exists primarily as a learning sandbox for exploring how modern React architecture feels when the interface stops competing for attention.
+
+The current focus is:
+
+- UI systems
+- component architecture
+- motion choreography
+- state modelling
+- scalable route structure
+
+The backend/data layer is intentionally incomplete for now.
+
+---
+
+## `// 01` — features
+
+| Surface | Description |
+|---|---|
+| **Authentication** | Sign in · Sign up · Forgot password (UI only) |
+| **Dashboard** | Project listing with filtering, sorting, and search |
+| **Projects** | Dynamic project routes with Kanban task boards |
+| **Tasks** | Inline task creation, status transitions, contextual actions |
+| **Context menus** | Right-click interactions for task management |
+| **User dock** | Floating system menu with animated signal pulse |
+| **Settings** | Profile · Account · Security sections |
+| **Theme system** | Persistent monochrome dark/light themes |
+| **Motion system** | Framer Motion + GSAP choreography |
+| **Responsive layout** | Optimized for desktop-first workflows |
+
+---
+
+## `// 02` — stack
+
+```txt
+┌─────────────────────────────────────────────────────────────┐
+│  next.js          ── app router, layouts, server rendering │
+│  tanstack query   ── async state + optimistic mutations    │
+│  neon postgres    ── serverless relational database        │
+│  tailwind v4      ── utility-first styling + tokens        │
+│  framer motion    ── component-level transitions           │
+│  gsap             ── hero choreography + timeline motion   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Why Next.js App Router?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Nested layouts
+- Route-level loading/error boundaries
+- Better server/client composition
+- Cleaner filesystem routing
+- Scales better than client-only route trees
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Why TanStack Query?
 
-## Learn More
+Server state becomes difficult surprisingly fast.
 
-To learn more about Next.js, take a look at the following resources:
+TanStack Query solves:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- optimistic updates
+- stale cache invalidation
+- background synchronization
+- retry handling
+- mutation lifecycle management
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+without turning async state into spaghetti.
 
-## Deploy on Vercel
+### Why Neon?
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Serverless Postgres with branching and instant provisioning.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Perfect for experimentation without infrastructure overhead.
+
+---
+
+## `// 03` — design language
+
+Harmony intentionally avoids decorative UI noise.
+
+### Core principles
+
+- zero-radius geometry
+- monochrome-first surfaces
+- restrained motion
+- aggressive hierarchy
+- intentional negative space
+
+### Tokens
+
+| token | role |
+|---|---|
+| `--color-background` | primary surface |
+| `--color-ink` | foreground |
+| `--color-ink-mute` | muted foreground |
+| `--color-border` | hairline separators |
+| `--color-signal` | red interaction accent |
+| `--color-signal-glow` | signal bloom |
+| `--dot-pattern` | matrix texture |
+
+### Typography
+
+| Role | Typeface |
+|---|---|
+| Display / mono | JetBrains Mono |
+| Body | Inter |
+
+### Motion philosophy
+
+Motion exists only to:
+
+- guide attention
+- reinforce hierarchy
+- communicate state
+
+Not to decorate emptiness.
+
+---
+
+## `// 04` — routes
+
+```txt
+/                           landing
+/sign-in                    authentication
+/sign-up                    authentication
+/forgot-password            authentication
+
+/dashboard                  projects overview
+
+/projects/[projectId]       project workspace
+
+/settings                   account settings
+```
+
+---
+
+## `// 05` — project structure
+
+```txt
+frontend/
+├── app/
+│   ├── dashboard/
+│   ├── projects/
+│   │   └── [projectId]/
+│   ├── settings/
+│   ├── sign-in/
+│   ├── sign-up/
+│   └── forgot-password/
+│
+├── components/
+│   ├── nothing/
+│   │   ├── Shell.tsx
+│   │   ├── Modal.tsx
+│   │   ├── ContextMenu.tsx
+│   │   ├── ThemeToggle.tsx
+│   │   └── UserDock.tsx
+│   │
+│   ├── projects/
+│   └── tasks/
+│
+├── lib/
+│   ├── harmony-data.ts
+│   └── utils.ts
+│
+├── styles/
+│   └── globals.css
+│
+└── public/
+```
+
+---
+
+## `// 06` — local setup
+
+```bash
+# install dependencies
+npm install
+
+# start development server
+npm run dev
+```
+
+Then open:
+
+```txt
+http://localhost:3000
+```
+
+---
+
+## `// 07` — current status
+
+```txt
+[■■■■■■■■■■]  ui system
+[■■■■■■■■··]  interaction layer
+[■■■■■·····]  component architecture
+[■■········]  backend integration
+[··········]  authentication logic
+[··········]  realtime collaboration
+```
+
+---
+
+## `// 08` — roadmap
+
+- Neon integration
+- Task persistence
+- Optimistic mutations
+- Real authentication
+- Realtime sync
+- Activity timelines
+- Drag-and-drop task ordering
+- Presence indicators
+- Mobile interaction refinement
+
+---
+
+<div align="center">
+
+`signal level: ◉`
+
+**Harmony** — clarity over noise.
+
+</div>
