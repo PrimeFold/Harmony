@@ -346,8 +346,8 @@ This keeps public surfaces like:
 
 ```txt
 /
-/sign-in
-/sign-up
+/signIn
+/signUp
 ```
 
 fully accessible while allowing protected sections to inherit authentication automatically.
@@ -386,7 +386,7 @@ httpOnly cookie → secure session transport
 Refresh tokens  → silent session recovery
 ```
 
-The result is a secure authentication flow with minimal client-side complexity and zero visual flicker during protected navigation.
+The result is a secure authentication flow with minimal client-side complexity and close to zero visual flicker during protected navigation.
 
 
 
