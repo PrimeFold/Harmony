@@ -147,9 +147,9 @@ Not to decorate emptiness.
 
 ```txt
 /                           landing
-/sign-in                    authentication
-/sign-up                    authentication
-/forgot-password            authentication
+/auth/signIn                    authentication
+/auth/signUp                    authentication
+/auth/forgotPassword            authentication
 
 /dashboard                  projects overview
 
@@ -195,10 +195,10 @@ app/
 
 ```bash
 # install dependencies
-npm install
+bun install
 
 # start development server
-npm run dev
+bun run dev
 ```
 
 Then open:
@@ -233,9 +233,166 @@ http://localhost:3000
 
 ---
 
+## `// architecture notes` — authentication strategy
+
+### Middleware vs AuthGuard
+
+One of the earliest architectural questions was:
+
+> "If Middleware already protects routes, why introduce an additional AuthGuard layer?"
+
+The answer came down to runtime responsibilities.
+
+Middleware is extremely fast and ideal for:
+
+- redirecting unauthenticated users
+- protecting route segments
+- checking cookies
+- gating access before rendering
+
+Example:
+
+```ts
+pathname.startsWith("/dashboard")
+pathname.startsWith("/settings")
+```
+
+This avoids hardcoding every protected route individually.
+
+However, Middleware is intentionally lightweight and not ideal for:
+
+- database verification
+- token rotation
+- user hydration
+- session recovery logic
+
+To solve this, Harmony uses a second verification layer:
+
+```txt
+Middleware  →  route gate
+AuthGuard   →  session verification
+```
+
+---
+
+### Authentication vs Authorization
+
+Another key realization:
+
+A valid JWT payload only proves:
+
+```txt
+"This token was signed correctly."
+```
+
+It does not prove:
+
+- the user still exists
+- the account is active
+- the session is still trusted
+
+Because of this, the AuthGuard performs an additional database lookup after decoding the token.
+
+This prevents scenarios like:
+
+```txt
+deleted user + valid token = ghost session
+```
+
+The database remains the final source of truth.
+
+---
+
+### Why httpOnly cookies instead of localStorage?
+
+Initially, token storage in `localStorage` seemed simpler.
+
+However, Harmony uses `httpOnly` cookies because they:
+
+- are inaccessible to client-side JavaScript
+- reduce XSS attack exposure
+- are automatically attached to requests
+- remove manual frontend token management
+
+This also simplifies the frontend architecture significantly.
+
+---
+
+### Session persistence
+
+A common concern during implementation was:
+
+> "Will users be logged out after closing the browser?"
+
+The solution was persistent refresh-token cookies using `maxAge`.
+
+Because the browser stores these cookies on disk, sessions survive browser restarts and can automatically restore themselves through silent token rotation.
+
+---
+
+### Layout-level protection
+
+Instead of wrapping the entire application with authentication logic, Harmony protects only the relevant route groups.
+
+The authentication layer is attached to the protected layout:
+
+```txt
+/dashboard
+/projects/[projectId]
+/settings
+```
+
+This keeps public surfaces like:
+
+```txt
+/
+/sign-in
+/sign-up
+```
+
+fully accessible while allowing protected sections to inherit authentication automatically.
+
+---
+
+### Relationship with TanStack Query
+
+Authentication and server-state management solve different problems.
+
+The AuthGuard handles:
+
+- entry validation
+- session verification
+- token refresh logic
+
+TanStack Query handles:
+
+- task fetching
+- project mutations
+- optimistic updates
+- cache synchronization
+
+The separation keeps authentication infrastructure independent from application data flow.
+
+---
+
+### Final architecture
+
+Harmony uses a hybrid authentication strategy:
+
+```txt
+Middleware      → fast route protection
+AuthGuard       → database verification
+httpOnly cookie → secure session transport
+Refresh tokens  → silent session recovery
+```
+
+The result is a secure authentication flow with minimal client-side complexity and zero visual flicker during protected navigation.
+
+
 
 `signal level: ◉`
 
 **Harmony** — clarity over noise.
+
 
 
