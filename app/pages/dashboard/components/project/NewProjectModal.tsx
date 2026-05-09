@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Modal } from "@/app/components/Modal";
+import { Modal } from "@/components/Modal";
 import { createProject, getAllProjects } from "@/app/api/project/action";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@/app/types/user";
@@ -23,14 +23,13 @@ export function NewProjectModal({
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [start, setStart] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [expireAt, setExpireAt] = useState("");
   const [description,setDescription] = useState("")
   type ProjectStatus = Project["status"];
 
   const statuses: ProjectStatus[] = [
     "active",
     "paused",
-    "cancelled",
     "completed",
   ];
   const [status, setStatus] = useState<ProjectStatus>("active");
@@ -40,21 +39,19 @@ export function NewProjectModal({
     setDesc("");
     setStatus("active");
     setStart("");
-    setDeadline("");
+    setExpireAt("");
     setDescription("");
   };
   const queryClient = useQueryClient();
-  const deadlineAsDate = new Date(deadline)
+  const deadlineAsDate = new Date(expireAt)
 
   const {data: projectResponse , isLoading , isError} = useQuery({
     queryKey:['projects',user.id],
-    queryFn:()=>getAllProjects(user.id)
+    queryFn:async()=>getAllProjects(user.id)
   })
 
-  const projects = projectResponse?.success ? projectResponse.data: [];
-
   const { mutate, isPending } = useMutation({
-    mutationFn: () => createProject(name, deadlineAsDate, user.id, description), 
+    mutationFn: async() => createProject(name, deadlineAsDate, user.id, description), 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects", user.id] });
       reset();
@@ -64,10 +61,10 @@ export function NewProjectModal({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!deadline) {
+    if (!expireAt) {
       const defaultDate = new Date();
       defaultDate.setDate(defaultDate.getDate() + 30);
-      setDeadline(defaultDate.toISOString().slice(0, 10));
+      setExpireAt(defaultDate.toISOString().slice(0, 10));
     }
 
     if (!name.trim()) return;
@@ -183,9 +180,9 @@ export function NewProjectModal({
             <input
               type="date"
               className="nothing-input"
-              value={deadline}
+              value={expireAt}
               onChange={(e) =>
-                setDeadline(e.target.value)
+                setExpireAt(e.target.value)
               }
             />
           </div>

@@ -1,10 +1,10 @@
-"use client";
+
 
 import { useState } from "react";
 import { TaskStatusPicker } from "./TaskStatusPicker";
 import { TaskFormFields } from "./TaskFormFields";
 import { Task } from "@/app/types/task";
-import { Modal } from "@/app/components/Modal";
+import { Modal } from "@/components/Modal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTask } from "@/app/api/tasks/action";
 import { Project } from "@/app/types/project";
@@ -36,7 +36,7 @@ export function NewTaskModal({
 
   const queryClient = useQueryClient();
   const {mutate:createTaskMutation}=useMutation({
-    mutationFn:()=>createTask(project.id,title),
+    mutationFn:async()=>createTask(project.id,title),
     onSuccess:()=>{
       queryClient.invalidateQueries({queryKey:['tasks',project.id]}),
       onClose(),

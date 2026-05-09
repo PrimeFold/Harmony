@@ -1,13 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
-
-
 import { DashboardHeader } from "./components/DashboardHeader";
-
 import { ProjectGrid } from "./components/project/ProjectGrid";
-
 import { NewProjectModal } from "./components/project/NewProjectModal";
 import { FilterBar } from "./components/project/Filterbar";
 import { User } from "@/app/types/user";
@@ -20,7 +15,7 @@ export default function DashboardPage({user}:{user:User}) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"deadline" | "start" | "name">("deadline");
+  const [sortBy, setSortBy] = useState<"expireAt" | "start" | "name">("expireAt");
   const [modal, setModal] = useState(false);
 
   const counts = useMemo(() => {
@@ -28,7 +23,6 @@ export default function DashboardPage({user}:{user:User}) {
       all: projects.length,
       active: 0,
       paused: 0,
-      cancelled:0,
       completed: 0,
     };
 

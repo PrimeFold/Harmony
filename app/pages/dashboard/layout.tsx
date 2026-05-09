@@ -1,5 +1,5 @@
 import AuthGuard from "@/app/pages/dashboard/components/AuthGuard";
-import { Shell } from "@/app/components/Shell";
+import { Shell } from "@/components/Shell";
 import QueryProvider from "@/app/providers/QueryProvider";
 
 

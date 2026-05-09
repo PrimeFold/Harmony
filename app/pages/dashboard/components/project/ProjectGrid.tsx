@@ -15,7 +15,7 @@ export function ProjectGrid({
     isError,
   } = useQuery({
     queryKey: ["projects", user.id],
-    queryFn: () => getAllProjects(user.id),
+    queryFn: async() => getAllProjects(user.id),
   });
 
   const projects =

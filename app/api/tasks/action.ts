@@ -1,3 +1,4 @@
+"use server"
 import { prisma } from "@/app/lib/prisma";
 import { taskSchema } from "@/app/utils/zod"
 

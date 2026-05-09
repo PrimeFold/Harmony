@@ -3,7 +3,7 @@ import { UserDock } from "./UserDock";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ThemeToggle } from "./ThemeToggle";
-import { type User } from "../types/user";
+import { type User } from "../app/types/user";
 
 
 interface LandingShellProps{

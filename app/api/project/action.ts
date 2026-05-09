@@ -1,4 +1,4 @@
-
+"use server"
 import { prisma } from "@/app/lib/prisma";
 import { projectSchema } from "@/app/utils/zod";
 
@@ -201,40 +201,19 @@ export const getProjectById = async(projectId:string)=>{
         }
 
     } catch (error) {
-        throw new Error("Error fetching project")
-    }
-}
-
-
-export const markProjectCancelled = async(projectId:string)=>{
-    try {
-        const cancelledProject = await prisma.project.update({
-            where:{id:projectId,status:{not:"completed"}},
-            data:{
-                status:"cancelled"
-            }
-        })
-
-        if(!cancelledProject){
-            throw new Error("Couldn't mark project as cancelled")
-        }
-
         return{
             success:true,
-            message:"Project cancelled",
-        }
-
-    } catch (error) {
-        return{
-            success:false,
-            message:(error as Error).message
+            message:"Error fetching project"
         }
     }
 }
+
+
+
 export const markProjectComplete= async(projectId:string)=>{
     try {
         const completedProject = await prisma.project.update({
-            where:{id:projectId,status:{not:"cancelled"}},
+            where:{id:projectId},
             data:{
                 status:"completed"
             }
@@ -259,7 +238,7 @@ export const markProjectComplete= async(projectId:string)=>{
 export const markProjectPaused= async(projectId:string)=>{
     try {
         const pausedProject = await prisma.project.update({
-            where:{id:projectId,status:{not:"cancelled"}},
+            where:{id:projectId},
             data:{
                 status:"paused"
             }
@@ -284,7 +263,7 @@ export const markProjectPaused= async(projectId:string)=>{
 export const markProjectActive= async(projectId:string)=>{
     try {
         const activeProject = await prisma.project.update({
-            where:{id:projectId,status:{not:"cancelled"}},
+            where:{id:projectId},
             data:{
                 status:"active"
             }

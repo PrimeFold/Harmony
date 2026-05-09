@@ -16,3 +16,7 @@ export const getUserIdFromCookies = async () => {
   }
   return decoded.userId; 
 }
+
+
+
+

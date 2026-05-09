@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import Link from "next/link";
-import { Shell } from "@/app/components/Shell";
+import { Shell } from "@/components/Shell";
 
 
 export default function LandingClient() {

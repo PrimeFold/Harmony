@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteTask, markTaskActive, markTaskComplete, markTaskTodo, renameTask } from "../api/tasks/action";
-import { User } from "../types/user";
-import { Task } from "../types/task";
+import { deleteTask, markTaskActive, markTaskComplete, markTaskTodo, renameTask } from "../app/api/tasks/action";
+import { User } from "../app/types/user";
+import { Task } from "../app/types/task";
 
 interface Props {
   task: Task;

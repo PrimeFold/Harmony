@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { DotMark } from "../components/Shell";
+import { DotMark } from "../../components/Shell";
 
 interface AuthLayoutProps {
   eyebrow: string;

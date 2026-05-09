@@ -5,8 +5,7 @@ import { AuthLayout } from "../../layouts/AuthLayout";
 
 import { useState } from "react";
 import { login } from "@/app/lib/actions/auth.action";
-import { redirect } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 
 export default function SignInPage() {

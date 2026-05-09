@@ -16,7 +16,6 @@ enum ProjectStatus {
   active
   paused
   completed
-  cancelled
 }
 
 enum TaskStatus{

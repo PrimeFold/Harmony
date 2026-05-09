@@ -7,5 +7,5 @@ export interface Project{
     tasks:Task[];
     createdAt: Date;
     expireAt: Date;
-    status: "active" | "paused" | "cancelled" | "completed"
+    status: "active" | "paused"  | "completed"
 }
