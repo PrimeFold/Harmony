@@ -27,7 +27,8 @@ export const createProject = async(name:string,deadline:Date,userId:string,descr
                 description:true,
                 expireAt:true,
                 createdAt:true,
-                status:true
+                status:true,
+                tasks:true
             }
         })
 

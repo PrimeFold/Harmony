@@ -5,12 +5,23 @@ import type { ReactNode } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { type User } from "../types/user";
 
-interface ShellProps {
+
+interface LandingShellProps{
+  variant:"landing";
+  user?:User;
+  children?:ReactNode;
+  active?:"about";
+}
+
+
+interface DefaultShellProps {
   user: User;
   children: ReactNode;
-  active?: "app" | "about";
-  variant?: "landing" | "app";
+  active?: "app";
+  variant: "app";
 }
+
+type ShellProps = LandingShellProps | DefaultShellProps;
 
 export function Shell({ user, children, active, variant = "app" }: ShellProps) {
   return (
@@ -22,7 +33,8 @@ export function Shell({ user, children, active, variant = "app" }: ShellProps) {
   );
 }
 
-function TopBar({ user, active, variant }: { user: User; active?: ShellProps["active"]; variant: "landing" | "app" }) {
+
+function TopBar({ user, active, variant }: { user?: User; active: ShellProps["active"]; variant: "landing" | "app" }) {
   return (
     <header className="nothing-hairline-b sticky top-0 z-40 bg-background/85 backdrop-blur">
       <div className="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">

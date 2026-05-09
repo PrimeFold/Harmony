@@ -6,9 +6,9 @@ import { signAccessToken,signRefreshToken, verifyRefreshToken} from "@/app/lib/j
 import bcrypt from 'bcrypt' 
 import { loginSchema, signupSchema } from "@/app/utils/zod";
 
-export const signUpAction = async (formData: FormData) => {
 
-    const result = signupSchema.safeParse(formData);
+export const signUpAction = async (username: string, email: string, password: string) => {
+    const result = signupSchema.safeParse({username,email,password});
 
     if(!result.success){
       return{
@@ -16,12 +16,12 @@ export const signUpAction = async (formData: FormData) => {
         message:"Enter details properly"
       }
     }
-    const {username,email,password} = result.data;
+    const { username: validUsername, email: validEmail, password: validPassword } = result.data;
 
     try {
       
       const existing = await prisma.user.findFirst({
-        where:{email:email}
+        where:{email:validEmail}
       })
 
       if(existing){
@@ -35,8 +35,8 @@ export const signUpAction = async (formData: FormData) => {
   
       const user = await prisma.user.create({
         data: {
-          username,
-          email,
+          username:validUsername,
+          email:validEmail,
           password: hashedPassword,
         },
       });
@@ -63,8 +63,8 @@ export const signUpAction = async (formData: FormData) => {
     }
 };
 
-export const loginAction = async(formData:FormData)=>{
-  const result = loginSchema.safeParse(formData);
+export const loginAction = async( email: string, password: string)=>{
+  const result = loginSchema.safeParse({email,password});
   if(!result.success){
     return {
       success:false,
@@ -72,11 +72,11 @@ export const loginAction = async(formData:FormData)=>{
     }
   }
 
-  const {email,password} = result.data;
+  const {email:validEmail,password:validPassword} = result.data;
 
   try {
     const existingUser= await prisma.user.findFirst({
-      where:{email:email}
+      where:{email:validEmail}
     })
     
     if(!existingUser){
@@ -86,7 +86,7 @@ export const loginAction = async(formData:FormData)=>{
       }
     }
 
-    const isValid = await bcrypt.compare(password,existingUser.password)
+    const isValid = await bcrypt.compare(validPassword,existingUser.password)
     if(!isValid){
       return{
         success:false,
@@ -119,7 +119,7 @@ export const loginAction = async(formData:FormData)=>{
           userId:existingUser.id ,
           token:refreshToken,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      }
+      },
     })
       
     return{
@@ -141,7 +141,7 @@ export const loginAction = async(formData:FormData)=>{
   }
 }
 
-export const logout = async()=>{
+export const logoutAction = async()=>{
 
   const cookieStore = await cookies()
   const refreshToken = cookieStore.get('refresh-token')?.value;
@@ -158,12 +158,14 @@ export const logout = async()=>{
     return {
         success: true,
         message: "Logged out successfully",
+        error:""
     };
     
   } catch (error) {
     return{
       success:false,
-      message:"Log out failed !"
+      message:(error as Error).message,
+     
     }
   }
 

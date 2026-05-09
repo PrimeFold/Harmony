@@ -1,46 +1,48 @@
 "use client";
 
 import { useState } from "react";
-
-
-
-import {
-  Task,
-  TaskStatus,
-} from "@/lib/halftone-data";
-
 import { TaskStatusPicker } from "./TaskStatusPicker";
-
 import { TaskFormFields } from "./TaskFormFields";
-import { Modal } from "../Modal";
+import { Task } from "@/app/types/task";
+import { Modal } from "@/app/components/Modal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTask } from "@/app/api/tasks/action";
+import { Project } from "@/app/types/project";
 
-type Props = {
+
+type TaskProps = {
+  project:Project
   open: boolean;
-  onClose: () => void;
-  onCreate: (t: Task) => void;
+  onClose: () => void; 
 };
 
+
 export function NewTaskModal({
+  project,
   open,
   onClose,
-  onCreate,
-}: Props) {
+}: TaskProps) {
+
   const [title, setTitle] =
     useState("");
 
-  const [meta, setMeta] =
-    useState("");
 
-  const [status, setStatus] =
-    useState<TaskStatus>(
-      "todo"
-    );
+  const [status, setStatus] = useState<Task["status"]>("todo");
 
   const reset = () => {
     setTitle("");
-    setMeta("");
     setStatus("todo");
   };
+
+  const queryClient = useQueryClient();
+  const {mutate:createTaskMutation}=useMutation({
+    mutationFn:()=>createTask(project.id,title),
+    onSuccess:()=>{
+      queryClient.invalidateQueries({queryKey:['tasks',project.id]}),
+      onClose(),
+      reset();
+    }
+  })
 
   const submit = (
     e: React.FormEvent
@@ -50,23 +52,9 @@ export function NewTaskModal({
     if (!title.trim()) {
       return;
     }
-
-    onCreate({
-      id: `T-${Math.random()
-        .toString(36)
-        .slice(2, 5)
-        .toUpperCase()}`,
-
-      title: title.trim(),
-
-      meta:
-        meta.trim() || "—",
-
-      status,
-    });
-
-    reset();
+    createTaskMutation();
   };
+  
 
   return (
     <Modal
@@ -83,9 +71,7 @@ export function NewTaskModal({
 
         <TaskFormFields
           title={title}
-          meta={meta}
           onTitleChange={setTitle}
-          onMetaChange={setMeta}
         />
 
         <TaskStatusPicker

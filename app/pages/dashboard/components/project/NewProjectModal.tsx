@@ -7,6 +7,7 @@ import { createProject, getAllProjects } from "@/app/api/project/action";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@/app/types/user";
 import { Project } from "@/app/types/project";
+import { ProjectLoader } from "./ProjectLoader";
 
 type Props = {
   open: boolean;
@@ -72,7 +73,7 @@ export function NewProjectModal({
     if (!name.trim()) return;
     mutate();
   };
-
+  if(isLoading) return  <ProjectLoader />;
   return (
     <Modal
       open={open}

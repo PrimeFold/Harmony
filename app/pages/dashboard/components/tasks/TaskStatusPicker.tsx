@@ -1,8 +1,9 @@
-import { TaskStatus } from "@/lib/halftone-data";
+import { Task } from "@/app/types/task";
+
 
 type Props = {
-  value: TaskStatus;
-  onChange: (s: TaskStatus) => void;
+  value: Task["status"];
+  onChange: (s: Task["status"]) => void;
 };
 
 export function TaskStatusPicker({
@@ -19,9 +20,9 @@ export function TaskStatusPicker({
         {(
           [
             "todo",
-            "doing",
-            "done",
-          ] as TaskStatus[]
+            "active",
+            "completed",
+          ] as Task["status"][]
         ).map((s) => {
           const sel = value === s;
 

@@ -1,19 +1,13 @@
-import {
-  PROJECT_STATUSES,
-  type ProjectStatus,
-} from "@/lib/halftone-data";
 import { Filter } from "../../page";
-
-
 
 type Props = {
   filter: Filter;
   setFilter: (f: Filter) => void;
-  sortBy: "deadline" | "start" | "name";
-  setSortBy: (s: "deadline" | "start" | "name") => void;
+  sortBy: "expireAt" | "start" | "name";
+  setSortBy: (s: "expireAt" | "start" | "name") => void;
   counts: Record<Filter, number>;
 };
-
+const PROJECT_STATUSES = ["active", "paused", "completed"] as const;
 export function FilterBar({
   filter,
   setFilter,
@@ -28,7 +22,6 @@ export function FilterBar({
         <div className="flex flex-wrap gap-2">
           {(["all", ...PROJECT_STATUSES] as Filter[]).map((f) => {
             const isActive = filter === f;
-
             return (
               <button
                 key={f}
@@ -57,7 +50,7 @@ export function FilterBar({
             Sort
           </span>
 
-          {(["deadline", "start", "name"] as const).map((s) => (
+          {(["expireAt", "start", "name"] as const).map((s) => (
             <button
               key={s}
               onClick={() => setSortBy(s)}

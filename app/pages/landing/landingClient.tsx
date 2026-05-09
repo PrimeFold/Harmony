@@ -31,7 +31,7 @@ export default function LandingClient() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 nothing-dotgrid opacity-60 pointer-events-none" />
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] pointer-events-none"
+        <div className="absolute -top-40 -right-40 w-150 h-150 pointer-events-none"
              style={{
                background: "radial-gradient(closest-side, var(--color-signal-glow), transparent 70%)",
                opacity: 0.18,

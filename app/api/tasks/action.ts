@@ -3,6 +3,7 @@ import { taskSchema } from "@/app/utils/zod"
 
 
 export const createTask = async(name:string,projectId:string)=>{
+    
     const result = taskSchema.safeParse({name});
     if(!result.success){
         throw new Error("Invalid task name..Please try again")
@@ -15,7 +16,8 @@ export const createTask = async(name:string,projectId:string)=>{
             select:{
                 id:true,
                 name:true,
-                projectId:true
+                projectId:true,
+                status:true
             }
         })
 
@@ -50,7 +52,8 @@ export const getTasksByProjectId = async(projectId:string)=>{
             select:{
                 id:true,
                 name:true,
-                projectId:true
+                projectId:true,
+                status:true
             }
         })
 
@@ -83,7 +86,13 @@ export const renameTask = async(taskId:string,newName:string)=>{
     try {
         const task = await prisma.task.update({
             where:{id:taskId},
-            data:{name:newName}
+            data:{name:newName},
+            select:{
+                id:true,
+                name:true,
+                projectId:true,
+                status:true
+            }
         })
 
         if(!task){
@@ -114,6 +123,12 @@ export const markTaskComplete = async(taskId:string)=>{
             where:{id:taskId},
             data:{
                 status:"completed"
+            },
+            select:{
+                id:true,
+                name:true,
+                projectId:true,
+                status:true
             }
         })
 
@@ -124,6 +139,7 @@ export const markTaskComplete = async(taskId:string)=>{
         return{
             success:true,
             message:"Task completed",
+            data:completedTask
         }
 
     } catch (error) {
@@ -134,38 +150,19 @@ export const markTaskComplete = async(taskId:string)=>{
     }
 }
 
-export const markTaskPaused = async(taskId:string)=>{
-    try {
-        const pausedTask = await prisma.task.update({
-            where:{id:taskId},
-            data:{
-                status:"paused"
-            }
-        })
-
-        if(!pausedTask){
-            throw new Error("Couldn't mark task as paused")
-        }
-
-        return{
-            success:true,
-            message:"Task paused",
-        }
-
-    } catch (error) {
-        return{
-            success:false,
-            message:(error as Error).message
-        }
-    }
-}
 
 export const markTaskActive = async(taskId:string)=>{
     try {
         const activeTask = await prisma.task.update({
-            where:{id:taskId,status:"paused"},
+            where:{id:taskId,status:"completed"},
             data:{
                 status:"active"
+            },
+            select:{
+                id:true,
+                name:true,
+                projectId:true,
+                status:true
             }
         })
 
@@ -185,22 +182,28 @@ export const markTaskActive = async(taskId:string)=>{
         }
     }
 }
-export const markTaskCancelled = async(taskId:string)=>{
+export const markTaskTodo = async(taskId:string)=>{
     try {
-        const cancelledTask = await prisma.task.update({
-            where:{id:taskId,status:{not:"completed"}},
+        const activeTask = await prisma.task.update({
+            where:{id:taskId},
             data:{
-                status:"cancelled"
+                status:"todo"
+            },
+            select:{
+                id:true,
+                name:true,
+                projectId:true,
+                status:true
             }
         })
 
-        if(!cancelledTask){
-            throw new Error("Couldn't mark task as cancelled")
+        if(!activeTask){
+            throw new Error("Couldn't mark task as todo")
         }
 
         return{
             success:true,
-            message:"Task cancelled",
+            message:"Task added to todo",
         }
 
     } catch (error) {
@@ -210,6 +213,7 @@ export const markTaskCancelled = async(taskId:string)=>{
         }
     }
 }
+
 export const deleteTask = async(taskId:string)=>{
     try {
         const deletedTask = await prisma.task.delete({
