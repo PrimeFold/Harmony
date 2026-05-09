@@ -4,11 +4,13 @@ import Link from "next/link";
 import { AuthLayout } from "../../layouts/AuthLayout";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { login } from "@/app/lib/actions/auth.action";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/router";
+
 
 export default function SignInPage() {
-  const router = useRouter();
+  const router = useRouter()
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -21,6 +23,7 @@ export default function SignInPage() {
     setError(null);
     try {
       await login(email, password);
+      router.push("/pages/dashboard")
     } catch {
       setError("Something went wrong. Try again.");
     } finally {

@@ -35,7 +35,7 @@ model User {
   
   // Relations
   projects       Project[]       // Projects owned by the user
-  refreshTokens  RefreshToken[]
+  refreshTokens  RefreshToken[]   //refresh tokens assigned to user..
 }
 
 

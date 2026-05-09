@@ -76,7 +76,7 @@ export const loginAction = async( email: string, password: string)=>{
 
   try {
     const existingUser= await prisma.user.findFirst({
-      where:{email:validEmail}
+      where:{email:validEmail},
     })
     
     if(!existingUser){
@@ -128,7 +128,7 @@ export const loginAction = async( email: string, password: string)=>{
       data:{
         id:existingUser.id,
         username:existingUser.username,
-        email:existingUser.email
+        email:existingUser.email,
       }
     }
 
@@ -219,4 +219,36 @@ export const generateRefreshToken = async()=>{
   }
 
 }
+export const forgotPasswordAction = async (email: string, newPassword: string) => {
+  const result = loginSchema.safeParse({email,newPassword})
+  if(!result.success){
+    throw new Error("Enter details properly")
+  }  
+  const {email:validEmail,password:validNewPassword} = result.data;
+  try {
+    const user = await prisma.user.findFirst({ where: { email:validEmail } });
+
+    if (!user) {
+      return { success: false, message: "No account found with that email." };
+    }
+
+    const hashedPassword = await bcrypt.hash(validNewPassword, 12);
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+      select:{
+        id:true,
+        username:true,
+        email:true,
+        projects:true
+      }
+    });
+
+    return { success: true, message: "Password updated successfully." , data:updatedUser };
+  } catch (error) {
+    return { success: false, message: "Failed to update password." };
+  }
+};
+
 
