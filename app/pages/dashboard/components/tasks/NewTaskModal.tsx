@@ -44,7 +44,7 @@ export function NewTaskModal({
       return res.data;
     },
     onSuccess:()=>{
-      queryClient.invalidateQueries({queryKey:['tasks',project.id]}),
+      queryClient.invalidateQueries({queryKey:['project',project.id]}),
       onClose(),
       reset();
     }
