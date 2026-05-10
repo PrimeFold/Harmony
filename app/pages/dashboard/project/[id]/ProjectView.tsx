@@ -22,18 +22,32 @@ type TaskStatus = "todo" | "doing" | "done";
 export function ProjectView({ projectId, user }: Props) {
   const [taskModal, setTaskModal] = useState(false);
 
-  const { data: project, isLoading } = useQuery({
+  const { data: project, isLoading, isError } = useQuery({
     queryKey: ["project", projectId],
-    queryFn: async() => {
-        const res = await getProjectById(projectId)
-        if(!res.data || !res.success){
-            throw new Error(res.message || "Failed to load projects")
-        }
-        return res.data;
+    queryFn: async () => {
+      const res = await getProjectById(projectId);
+      
+      // Check if response is valid and successful
+      if (!res || !res.success || !res.data) {
+        throw new Error(res?.message || "Failed to load project");
+      }
+      
+      // Return the actual project object
+      return res.data;
     },
   });
 
-  if (isLoading || !project) return <div className="nothing-loading">// Loading Workspace</div>;
+  // Loading and Error Guards
+  if (isLoading) return <div className="nothing-loading">// Initializing Workspace Sync</div>;
+  
+  if (isError || !project) {
+    return (
+      <div className="nothing-error py-24 text-center nothing-mono">
+        <p className="text-signal">// Project Not Found</p>
+        <Link href="/dashboard" className="nothing-btn mt-4 inline-block">Return to Workspace</Link>
+      </div>
+    );
+  }
 
   return (
     <Shell variant="app" user={user}>
@@ -68,8 +82,15 @@ export function ProjectView({ projectId, user }: Props) {
 
           <div className="mt-10 grid lg:grid-cols-12 gap-px bg-hairline">
             <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-px">
-              <Cell label="Start" value={project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "No Limit"} />
-              <Cell label="Deadline" value={project.expireAt ? new Date(project.expireAt).toLocaleDateString() : "No Limit"} accent />
+              <Cell 
+                label="Start" 
+                value={project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "---"} 
+              />
+              <Cell 
+                label="Deadline" 
+                value={project.expireAt ? new Date(project.expireAt).toLocaleDateString() : "No Limit"} 
+                accent 
+              />
               <Cell label="Status" value={project.status} />
               <Cell label="Tasks" value={String(project.tasks?.length || 0).padStart(2, "0")} />
             </div>
