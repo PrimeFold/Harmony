@@ -1,4 +1,5 @@
-import { Filter } from "../../page";
+import { Filter } from "../../DashboardClient";
+
 
 type Props = {
   filter: Filter;

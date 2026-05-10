@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { ProjectGrid } from "./components/project/ProjectGrid";
 import { NewProjectModal } from "./components/project/NewProjectModal";
-import { FilterBar } from "./components/project/Filterbar";
 import { User } from "@/app/types/user";
 import { Project } from "@/app/types/project";
+import { FilterBar } from "./components/project/Filterbar";
 
 type ProjectStatus = Project["status"];
 export type Filter = "all" | ProjectStatus;
