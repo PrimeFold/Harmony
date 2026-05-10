@@ -1,17 +1,10 @@
 "use server"
 import { prisma } from "@/app/lib/prisma";
-import { taskSchema } from "@/app/utils/zod"
+
 
 
 export const createTask = async(name:string,projectId:string)=>{
-    
-    const result = taskSchema.safeParse({name});
-    if(!result.success){
-        throw new Error("Invalid task name..Please try again")
-    }
-
     try {
-        
         const task  = await prisma.task.create({
             data:{name:name,projectId:projectId},
             select:{
