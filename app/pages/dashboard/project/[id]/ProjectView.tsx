@@ -26,10 +26,10 @@ export function ProjectView({ projectId, user }: Props) {
     queryKey: ["project", projectId],
     queryFn: async() => {
         const res = await getProjectById(projectId)
-        if(!res.data){
-            throw new Error(res.message)
-            return res.data;
+        if(!res.data || !res.success){
+            throw new Error(res.message || "Failed to load projects")
         }
+        return res.data;
     },
   });
 
@@ -68,7 +68,7 @@ export function ProjectView({ projectId, user }: Props) {
 
           <div className="mt-10 grid lg:grid-cols-12 gap-px bg-hairline">
             <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-px">
-              <Cell label="Start" value={project.expireAt ? new Date(project.expireAt).toLocaleDateString() : "No Limit"} />
+              <Cell label="Start" value={project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "No Limit"} />
               <Cell label="Deadline" value={project.expireAt ? new Date(project.expireAt).toLocaleDateString() : "No Limit"} accent />
               <Cell label="Status" value={project.status} />
               <Cell label="Tasks" value={String(project.tasks?.length || 0).padStart(2, "0")} />
