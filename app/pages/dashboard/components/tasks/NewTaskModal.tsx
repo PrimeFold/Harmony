@@ -96,7 +96,7 @@ export function NewTaskModal({
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={submit}
             className="nothing-btn"
           >
             Cancel
