@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Shell } from "@/components/Shell";
 import { ContextMenu } from "@/components/ContextMenu";
 import { getProjectById } from "@/app/api/project/action";
 import { Task } from "@/app/types/task";
@@ -26,19 +25,14 @@ export function ProjectView({ projectId, user }: Props) {
     queryKey: ["project", projectId],
     queryFn: async () => {
       const res = await getProjectById(projectId);
-      
-      // Check if response is valid and successful
       if (!res || !res.success || !res.data) {
         throw new Error(res?.message || "Failed to load project");
       }
-      
-      // Return the actual project object
       return res.data;
     },
   });
 
-  // Loading and Error Guards
-  if (isLoading) return <div className="nothing-loading">// Initializing Workspace Sync</div>;
+  if (isLoading) return <div className="nothing-loading">// Syncing Workspace...</div>;
   
   if (isError || !project) {
     return (
@@ -50,8 +44,8 @@ export function ProjectView({ projectId, user }: Props) {
   }
 
   return (
-    <Shell variant="app" user={user}>
-      {/* Header */}
+    <main className="min-h-screen">
+      {/* Header Section */}
       <section className="nothing-hairline-b relative overflow-hidden">
         <div className="absolute inset-0 nothing-dotgrid opacity-40 pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-6 py-12">
@@ -98,8 +92,8 @@ export function ProjectView({ projectId, user }: Props) {
         </div>
       </section>
 
-      {/* Board */}
-      <section>
+      {/* Board Section */}
+      <section className="bg-background">
         <div className="mx-auto max-w-7xl px-6 py-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="nothing-display text-2xl">Tasks</h2>
@@ -145,7 +139,7 @@ export function ProjectView({ projectId, user }: Props) {
       </section>
 
       <NewTaskModal project={project} open={taskModal} onClose={() => setTaskModal(false)} />
-    </Shell>
+    </main>
   );
 }
 
