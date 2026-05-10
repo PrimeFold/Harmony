@@ -1,5 +1,6 @@
 "use server"
 import { prisma } from "@/app/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 
 
@@ -18,6 +19,8 @@ export const createTask = async(name:string,projectId:string)=>{
         if(!task){
             throw new Error("Error creating Task")
         }
+
+        revalidatePath(`/pages/dashboard/${projectId}`)
 
         return{
             success:true,
