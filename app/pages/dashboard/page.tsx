@@ -1,64 +1,16 @@
-"use client";
+import { cookies } from "next/headers";
+import { getAuthenticatedUser } from "@/app/lib/services/auth.service";
+import { redirect } from "next/navigation";
+import { DashboardClient } from "./DashboardClient";
 
-import { useMemo, useState } from "react";
-import { DashboardHeader } from "./components/DashboardHeader";
-import { ProjectGrid } from "./components/project/ProjectGrid";
-import { NewProjectModal } from "./components/project/NewProjectModal";
-import { FilterBar } from "./components/project/Filterbar";
-import { User } from "@/app/types/user";
-import { Project } from "@/app/types/project";
 
-type ProjectStatus = Project["status"];
-export type Filter = "all" | ProjectStatus;
+export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access-token")?.value;
+  if (!token) redirect("/auth/signIn");
 
-export default function DashboardPage({user}:{user:User}) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [filter, setFilter] = useState<Filter>("all");
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"expireAt" | "start" | "name">("expireAt");
-  const [modal, setModal] = useState(false);
+  const user = await getAuthenticatedUser(token);
+  if (!user) redirect("/auth/signIn");
 
-  const counts = useMemo(() => {
-    const c: Record<Filter, number> = {
-      all: projects.length,
-      active: 0,
-      paused: 0,
-      completed: 0,
-    };
-
-    projects.forEach((p) => (c[p.status] += 1));
-
-    return c;
-  }, [projects]);
-
-  return (
-    
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <DashboardHeader
-          projectsCount={projects.length}
-          search={search}
-          setSearch={setSearch}
-          onNewProject={() => setModal(true)}
-        />
-
-        
-      <FilterBar
-        filter={filter}
-        setFilter={setFilter}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        counts={counts}
-      />
-
-      <ProjectGrid user={user} />
-
-      <NewProjectModal
-        open={modal}
-        onClose={() =>
-          setModal(false)
-        }
-        user={user}
-      />
-    </div>
-  );
+  return <DashboardClient user={user} />;
 }
