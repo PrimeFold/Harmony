@@ -70,11 +70,8 @@ export default function LandingClient() {
                 transition={{ delay: 0.75 }}
                 className="flex flex-wrap gap-3"
               >
-                <Link href="/sign-up" className="nothing-btn nothing-btn--signal">
+                <Link href="/auth/signUp" className="nothing-btn nothing-btn--signal">
                   Get started ↗
-                </Link>
-                <Link href="/app" className="nothing-btn">
-                  Enter workspace
                 </Link>
               </motion.div>
             </div>
