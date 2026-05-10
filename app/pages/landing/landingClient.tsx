@@ -45,7 +45,7 @@ export default function LandingClient() {
                 release 0.1 · learning project
               </p>
               <h1 ref={heroRef} className="nothing-display text-6xl sm:text-7xl lg:text-8xl">
-                <HeroLine text="Halftone." />
+                <HeroLine text="Harmony." />
                 <br />
                 <HeroLine text="Tasks at" />
                 <br />
@@ -113,7 +113,7 @@ export default function LandingClient() {
               <span style={{ color: "var(--color-signal)" }}>purpose.</span>
             </h2>
             <p className="text-sm text-muted-foreground mt-6 max-w-md">
-              Halftone is built to learn — not to ship to production. It explores how the modern
+              Harmony is built to learn — not to ship to production. It explores how the modern
               React data-stack composes when you give the UI room to breathe. Every screen is a
               study in restraint: hairlines, dot grids, monospaced type, and a single red signal
               for the things that matter.
@@ -183,7 +183,7 @@ export default function LandingClient() {
               ))}
             </ul>
             <p className="nothing-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute pt-2">
-              // in halftone, the data layer is intentionally not wired yet — the UI is the lab.
+              // in Harmony, the data layer is intentionally not wired yet — the UI is the lab.
             </p>
           </div>
         </div>
@@ -238,7 +238,7 @@ const STACK = [
   {
     name: "Tailwind CSS v4",
     tag: "styling",
-    why: "Utility-first with CSS-native theming via @theme. Every token in halftone lives in a single styles.css.",
+    why: "Utility-first with CSS-native theming via @theme. Every token in Harmony lives in a single styles.css.",
   },
   {
     name: "Framer Motion + GSAP",
