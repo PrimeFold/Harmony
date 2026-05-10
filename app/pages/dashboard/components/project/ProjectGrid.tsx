@@ -40,6 +40,11 @@ export function ProjectGrid({
         throw new Error(response.message || "Failed to fetch");
       }
 
+      console.log("DEBUG: Final State", {
+        rawProjectsCount: projects.length,
+        filterValue: filter,
+        afterFilterCount: filtered.length
+      });
       return response;
     },
     enabled: !!user?.id, // Only run if user ID exists
