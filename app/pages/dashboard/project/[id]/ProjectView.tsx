@@ -10,13 +10,19 @@ import { Task } from "@/app/types/task";
 import { NewTaskModal } from "../../components/tasks/NewTaskModal";
 import { User } from "@/app/types/user";
 import { Project } from "@/app/types/project";
+import { ProjectLoader } from "../../components/project/ProjectLoader";
 
 type Props = {
   projectId: Project["id"];
   user: User;
 };
 
-type TaskStatus = "todo" | "doing" | "done";
+
+const COLUMNS: { key: Task["status"]; label: string; n: string }[] = [
+  { key: "todo", label: "To do", n: "00" },
+  { key: "active", label: "In progress", n: "01" },
+  { key: "completed", label: "Done", n: "02" },
+];
 
 export function ProjectView({ projectId, user }: Props) {
   const [taskModal, setTaskModal] = useState(false);
@@ -32,7 +38,7 @@ export function ProjectView({ projectId, user }: Props) {
     },
   });
 
-  if (isLoading) return <div className="nothing-loading">// Syncing Workspace...</div>;
+  if (isLoading) return <ProjectLoader />;
   
   if (isError || !project) {
     return (
@@ -97,7 +103,7 @@ export function ProjectView({ projectId, user }: Props) {
         <div className="mx-auto max-w-7xl px-6 py-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="nothing-display text-2xl">Tasks</h2>
-            <p className="nothing-mono text-[11px] uppercase tracking-[0.16em] text-ink-mute">right-click a task to toggle</p>
+            <p className="nothing-mono text-[11px] uppercase tracking-[0.16em] text-ink-mute">right-click a task to toggle status</p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-px bg-border">
@@ -142,12 +148,6 @@ export function ProjectView({ projectId, user }: Props) {
     </main>
   );
 }
-
-const COLUMNS: { key: TaskStatus; label: string; n: string }[] = [
-  { key: "todo", label: "To do", n: "00" },
-  { key: "doing", label: "In progress", n: "01" },
-  { key: "done", label: "Done", n: "02" },
-];
 
 function Cell({ label, value, accent }: { label: string; value?: string; accent?: boolean }) {
   return (
