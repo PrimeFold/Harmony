@@ -24,34 +24,66 @@ export function ContextMenu({ task, children }: Props) {
 
   const { mutate: updateStatusToComplete } = useMutation({
     mutationFn: () => markTaskComplete(task.id),
-    onMutate: () => updateCache(t => ({ ...t, status: "completed" })),
+    onMutate: () => {
+      console.log('=== COMPLETE ===');
+      console.log('task:', task);
+      console.log('projectId:', task.projectId);
+      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      updateCache(t => ({ ...t, status: "completed" }));
+      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+    },
   });
-
+  
   const { mutate: updateStatusToActive } = useMutation({
     mutationFn: () => markTaskActive(task.id),
-    onMutate: () => updateCache(t => ({ ...t, status: "active" })),
+    onMutate: () => {
+      console.log('=== ACTIVE ===');
+      console.log('task:', task);
+      console.log('projectId:', task.projectId);
+      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      updateCache(t => ({ ...t, status: "active" }));
+      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+    },
   });
-
+  
   const { mutate: updateStatusToTodo } = useMutation({
     mutationFn: () => markTaskTodo(task.id),
-    onMutate: () => updateCache(t => ({ ...t, status: "todo" })),
+    onMutate: () => {
+      console.log('=== TODO ===');
+      console.log('task:', task);
+      console.log('projectId:', task.projectId);
+      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      updateCache(t => ({ ...t, status: "todo" }));
+      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+    },
   });
-
+  
   const { mutate: updateTaskName } = useMutation({
     mutationFn: (name: string) => renameTask(name, task.id),
-    onMutate: (name) => updateCache(t => ({ ...t, name })),
+    onMutate: (name) => {
+      console.log('=== RENAME ===');
+      console.log('task:', task);
+      console.log('new name:', name);
+      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      updateCache(t => ({ ...t, name }));
+      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+    },
   });
-
+  
   const { mutate: deleteThisTask } = useMutation({
     mutationFn: () => deleteTask(task.id),
     onMutate: () => {
+      console.log('=== DELETE ===');
+      console.log('task:', task);
+      console.log('projectId:', task.projectId);
+      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
       queryClient.setQueryData(['project', task.projectId], (old: any) => {
         if (!old) return old;
         return { ...old, tasks: old.tasks.filter((t: Task) => t.id !== task.id) };
       });
+      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
     },
   });
-
   const [pos, setPos]           = useState<{ x: number; y: number } | null>(null);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName]   = useState(task.name);
