@@ -37,7 +37,7 @@ export function NewTaskModal({
   const queryClient = useQueryClient();
   const {mutate:createTaskMutation,isPending}=useMutation({
     mutationFn:async()=>{
-      const res = await createTask(project.id,title)
+      const res = await createTask(title,project.id)
       if(!res.success){
         throw new Error(res.message)
       }
@@ -86,10 +86,8 @@ export function NewTaskModal({
         />
 
         <div className="flex gap-3 pt-2">
-
           <button
             type="submit"
-            onSubmit={submit}
             className="nothing-btn nothing-btn--signal flex-1"
           >
             Create ↗
