@@ -15,6 +15,7 @@ export function ProjectGrid({
   filter: Filter;
   sortBy: "expireAt" | "start" | "name";
 }) {
+  console.log("DEBUG: ProjectGrid Render", { userId: user?.id, filter, sortBy });
   const { data: projectResponse, isLoading, isError } = useQuery({
     queryKey: ["projects", user.id],
     queryFn: async () => {
