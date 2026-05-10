@@ -73,11 +73,21 @@ export const loginAction = async( email: string, password: string)=>{
   }
 
   const {email:validEmail,password:validPassword} = result.data;
-
   try {
     const existingUser= await prisma.user.findFirst({
       where:{email:validEmail},
     })
+
+    if(!existingUser){
+      return{
+        success:false,
+        message:"User not found"
+      }
+    }
+
+    await prisma.refreshToken.deleteMany({
+      where: { userId:existingUser.id }
+    });
     
     if(!existingUser){
       return{
@@ -103,7 +113,7 @@ export const loginAction = async( email: string, password: string)=>{
       secure:process.env.NODE_ENV==='production',
       sameSite:"lax",
       path:"/",
-      maxAge:60 * 5, //5 mins
+      maxAge:60 * 15, //5 mins
     })
 
     cookieStore.set("refresh-token", refreshToken, {
