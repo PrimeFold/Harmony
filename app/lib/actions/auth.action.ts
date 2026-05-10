@@ -1,7 +1,7 @@
 import { forgotPasswordAction, loginAction, logoutAction, signUpAction } from "@/app/api/auth/action"
 
 export const login = async(email:string,password:string)=>{
-    const {data} = await loginAction(email,password);
+    const data = await loginAction(email,password);
     return data;
 }
 

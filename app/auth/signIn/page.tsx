@@ -1,15 +1,12 @@
 "use client";
-
 import Link from "next/link";
 import { AuthLayout } from "../../layouts/AuthLayout";
-
 import { useState } from "react";
-import { login } from "@/app/lib/actions/auth.action";
 import { useRouter } from "next/navigation";
-
+import { login } from "@/app/lib/actions/auth.action";
 
 export default function SignInPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -21,8 +18,12 @@ export default function SignInPage() {
     setLoading(true);
     setError(null);
     try {
-      await login(email, password);
-      router.push("/pages/dashboard")
+      const res = await login(email, password);
+      if (!res.success) {
+        setError(res.message);
+      } else {
+        router.push("/pages/dashboard");
+      }
     } catch {
       setError("Something went wrong. Try again.");
     } finally {
@@ -57,6 +58,7 @@ export default function SignInPage() {
             disabled={loading}
           />
         </div>
+
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="nothing-label mb-0!" htmlFor="password">Password</label>
@@ -67,22 +69,24 @@ export default function SignInPage() {
               Forgot?
             </Link>
           </div>
-          <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            className="nothing-input"
-            placeholder="••••••••"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            disabled={loading}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(v => !v)}
-            className="absolute right-0 top-0 h-full px-3 nothing-mono text-[9px] uppercase tracking-[0.16em] text-ink-mute hover:text-ink"
-          >
-            {showPassword ? "hide" : "show"}
-          </button>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              className="nothing-input pr-16"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-0 top-0 h-full px-3 nothing-mono text-[9px] uppercase tracking-[0.16em] text-ink-mute hover:text-ink"
+            >
+              {showPassword ? "hide" : "show"}
+            </button>
+          </div>
         </div>
 
         {error && (
