@@ -60,7 +60,7 @@ function TopBar({ user, active, variant }: { user?: User; active: ShellProps["ac
               About
             </a>
           ) : (
-            <NavLink href="/app" label="Workspace" isActive={active === "app"} />
+            <Navbar  label="Workspace" isActive={active === "app"} />
           )}
         </nav>
 
@@ -107,15 +107,14 @@ function AuthedCluster({ user }: { user: User }) {
   );
 }
 
-function NavLink({ href, label, isActive, }: { href: "/app"; label: string; isActive?: boolean; }) {
+function Navbar({ label, isActive, }: { label: string; isActive?: boolean; }) {
   return (
-    <Link
-      href={href}
+    <span
       className="nothing-mono text-[11px] uppercase tracking-[0.18em] px-3 py-2 transition-colors"
       style={{ color: isActive ? "var(--color-ink)" : "var(--color-ink-mute)" }}
     >
       {label}
-    </Link>
+    </span>
   );
 }
 

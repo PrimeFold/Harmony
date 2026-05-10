@@ -44,7 +44,7 @@ export function DashboardClient({ user }: { user: User }) {
         setSortBy={setSortBy}
         counts={counts}
       />
-      <ProjectGrid user={user} />
+      <ProjectGrid filter={filter} sortBy={sortBy} user={user} />
       <NewProjectModal
         open={modal}
         onClose={() => setModal(false)}
