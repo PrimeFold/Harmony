@@ -35,20 +35,24 @@ export function NewTaskModal({
   };
 
   const queryClient = useQueryClient();
-  const {mutate:createTaskMutation,isPending}=useMutation({
-    mutationFn:async()=>{
-      const res = await createTask(title,project.id)
-      if(!res.success){
-        throw new Error(res.message)
-      }
+  const { mutate: createTaskMutation, isPending } = useMutation({
+    mutationFn: async () => {
+      const res = await createTask(title, project.id);
+      if (!res.success) throw new Error(res.message);
       return res.data;
     },
-    onSuccess:()=>{
-      queryClient.invalidateQueries({queryKey:['project',project.id]}),
-      onClose(),
+    onSuccess: (newTask) => {
+      queryClient.setQueryData(['project', project.id], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          tasks: [...(old.tasks || []), newTask],
+        };
+      });
+      onClose();
       reset();
-    }
-  })
+    },
+  });
 
   const submit = (
     e: React.FormEvent

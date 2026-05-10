@@ -118,7 +118,7 @@ export function ProjectView({ projectId, user }: Props) {
                   <div className="space-y-2">
                     <AnimatePresence mode="popLayout">
                       {items.map((task: Task) => (
-                        <ContextMenu key={task.id} task={task} user={user}>
+                        <ContextMenu key={task.id} task={task}>
                           {(open) => (
                             <motion.div
                               onContextMenu={open}

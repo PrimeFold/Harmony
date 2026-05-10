@@ -2,24 +2,55 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteTask, markTaskActive, markTaskComplete, markTaskTodo, renameTask } from "../app/api/tasks/action";
-import { User } from "../app/types/user";
 import { Task } from "../app/types/task";
 
 interface Props {
   task: Task;
-  user: User;
   children: (open: (e: React.MouseEvent) => void) => React.ReactNode;
 }
 
-export function ContextMenu({ task, user, children }: Props) {
+export function ContextMenu({ task, children }: Props) {
   const queryClient = useQueryClient();
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["projects", user.id] });
 
-  const { mutate: updateStatusToComplete } = useMutation({ mutationFn: () => markTaskComplete(task.id), onSuccess: invalidate });
-  const { mutate: deleteThisTask }         = useMutation({ mutationFn: () => deleteTask(task.id),        onSuccess: invalidate });
-  const { mutate: updateStatusToActive }   = useMutation({ mutationFn: () => markTaskActive(task.id),    onSuccess: invalidate });
-  const { mutate: updateStatusToTodo }     = useMutation({ mutationFn: () => markTaskTodo(task.id),      onSuccess: invalidate });
-  const { mutate: updateTaskName }         = useMutation({ mutationFn: (name: string) => renameTask(name, task.id), onSuccess: invalidate });
+  const updateCache = (updater: (task: Task) => Task) => {
+    queryClient.setQueryData(['project', task.projectId], (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        tasks: old.tasks.map((t: Task) => t.id === task.id ? updater(t) : t),
+      };
+    });
+  };
+
+  const { mutate: updateStatusToComplete } = useMutation({
+    mutationFn: () => markTaskComplete(task.id),
+    onMutate: () => updateCache(t => ({ ...t, status: "completed" })),
+  });
+
+  const { mutate: updateStatusToActive } = useMutation({
+    mutationFn: () => markTaskActive(task.id),
+    onMutate: () => updateCache(t => ({ ...t, status: "active" })),
+  });
+
+  const { mutate: updateStatusToTodo } = useMutation({
+    mutationFn: () => markTaskTodo(task.id),
+    onMutate: () => updateCache(t => ({ ...t, status: "todo" })),
+  });
+
+  const { mutate: updateTaskName } = useMutation({
+    mutationFn: (name: string) => renameTask(name, task.id),
+    onMutate: (name) => updateCache(t => ({ ...t, name })),
+  });
+
+  const { mutate: deleteThisTask } = useMutation({
+    mutationFn: () => deleteTask(task.id),
+    onMutate: () => {
+      queryClient.setQueryData(['project', task.projectId], (old: any) => {
+        if (!old) return old;
+        return { ...old, tasks: old.tasks.filter((t: Task) => t.id !== task.id) };
+      });
+    },
+  });
 
   const [pos, setPos]           = useState<{ x: number; y: number } | null>(null);
   const [renaming, setRenaming] = useState(false);
@@ -41,7 +72,6 @@ export function ContextMenu({ task, user, children }: Props) {
     close();
   };
 
-  // Focus input when rename mode activates
   useEffect(() => { if (renaming) inputRef.current?.focus(); }, [renaming]);
 
   useEffect(() => {
@@ -53,13 +83,12 @@ export function ContextMenu({ task, user, children }: Props) {
     return () => { window.removeEventListener("mousedown", onMouse); window.removeEventListener("keydown", onKey); };
   }, [pos]);
 
-
   const items = [
     task.status !== "completed" && { label: "Mark complete", onClick: () => { updateStatusToComplete(); close(); } },
     task.status !== "active"   && { label: "Mark active",   onClick: () => { updateStatusToActive();   close(); } },
     task.status !== "todo"     && { label: "Mark todo",     onClick: () => { updateStatusToTodo();     close(); } },
-    { label: "Rename",  onClick: () => setRenaming(true) },
-    { label: "Delete",  onClick: () => { deleteThisTask(); close(); }, danger: true, hint: "DEL" },
+    { label: "Rename", onClick: () => setRenaming(true) },
+    { label: "Delete", onClick: () => { deleteThisTask(); close(); }, danger: true, hint: "DEL" },
   ].filter(Boolean) as { label: string; onClick: () => void; hint?: string; danger?: boolean }[];
 
   return (
