@@ -89,6 +89,7 @@ export function NewTaskModal({
 
           <button
             type="submit"
+            onSubmit={submit}
             className="nothing-btn nothing-btn--signal flex-1"
           >
             Create ↗
@@ -96,7 +97,7 @@ export function NewTaskModal({
 
           <button
             type="button"
-            onClick={submit}
+            onClick={onClose}
             className="nothing-btn"
           >
             Cancel
