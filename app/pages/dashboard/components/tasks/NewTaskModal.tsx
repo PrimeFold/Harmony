@@ -36,7 +36,13 @@ export function NewTaskModal({
 
   const queryClient = useQueryClient();
   const {mutate:createTaskMutation}=useMutation({
-    mutationFn:async()=>createTask(project.id,title),
+    mutationFn:async()=>{
+      const res = await createTask(project.id,title)
+      if(!res.success){
+        throw new Error(res.message)
+      }
+      return res.data;
+    },
     onSuccess:()=>{
       queryClient.invalidateQueries({queryKey:['tasks',project.id]}),
       onClose(),
