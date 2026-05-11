@@ -23,6 +23,7 @@ export default function SignInPage() {
         setError(res.message);
       } else {
         router.push("/pages/dashboard");
+        
       }
     } catch {
       setError("Something went wrong. Try again.");

@@ -14,12 +14,12 @@ export default function ForgotPage() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      const response =  resetPassword(email, password);
+      const response =  await resetPassword(email, password);
       if (!response) {
         throw new Error("Error resetting the password ")
       } else {

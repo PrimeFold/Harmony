@@ -1,13 +1,14 @@
 "use server"
 import { prisma } from "@/app/lib/prisma";
+import { Task } from "@/app/types/task";
 import { revalidatePath } from "next/cache";
 
 
 
-export const createTask = async(name:string,projectId:string)=>{
+export const createTask = async(name:string,projectId:string,status:Task["status"])=>{
     try {
         const task  = await prisma.task.create({
-            data:{name:name,projectId:projectId},
+            data:{name:name,projectId:projectId,status:status},
             select:{
                 id:true,
                 name:true,
