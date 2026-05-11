@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shell } from "@/components/Shell";
 import { User } from "@/app/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changeEmail, changePassword, changeUsername } from "@/app/lib/actions/auth.action";
@@ -15,12 +14,12 @@ export function SettingsView({ user }: Props) {
   const [section, setSection] = useState<Section>("profile");
 
   return (
-    <Shell variant="app" user={user} active="app">
+    <div className="flex flex-col min-h-screen bg-background">
       <section className="nothing-hairline-b relative overflow-hidden">
         <div className="absolute inset-0 nothing-dotgrid opacity-40 pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-6 py-12">
           <nav className="nothing-mono text-[11px] uppercase tracking-[0.18em] mb-6 flex items-center gap-2">
-            <Link href="/dashboard" className="text-ink-mute hover:text-signal transition-colors">Workspace</Link>
+            <Link href="/pages/dashboard" className="text-ink-mute hover:text-signal transition-colors">Workspace</Link>
             <span className="text-ink-mute">/</span>
             <span className="text-ink">Settings</span>
           </nav>
@@ -39,7 +38,7 @@ export function SettingsView({ user }: Props) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 grid lg:grid-cols-12 gap-px bg-border">
+      <section className="mx-auto max-w-7xl px-6 py-10 grid lg:grid-cols-12 gap-px bg-border flex-1">
         <aside className="lg:col-span-3 bg-background p-4">
           <div className="nothing-mono text-[10px] tracking-[0.22em] text-ink-mute uppercase mb-3">Sections</div>
           <nav className="flex lg:flex-col gap-1">
@@ -71,10 +70,9 @@ export function SettingsView({ user }: Props) {
           </AnimatePresence>
         </div>
       </section>
-    </Shell>
+    </div>
   );
 }
-
 function FormShell({ title, hint, children, onSubmit, isPending, onReset }: {
   title: string;
   hint: string;
