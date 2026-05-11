@@ -129,14 +129,14 @@ export function UserDock() {
             <nav className="p-2">
 
               <Link
-                href="/settings"
+                href="/pages/settings"
                 className="block px-3 py-2 nothing-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute hover:text-signal hover:bg-[color-mix(in_oklab,var(--color-signal)_6%,transparent)] transition-colors"
               >
                 ⚙ Settings
               </Link>
 
               <Link
-                href="/dashboard"
+                href="/pages/dashboard"
                 className="block px-3 py-2 nothing-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute hover:text-signal hover:bg-[color-mix(in_oklab,var(--color-signal)_6%,transparent)] transition-colors"
               >
                 ▦ Workspace
@@ -145,7 +145,7 @@ export function UserDock() {
               <div className="my-1 nothing-hairline-b" />
 
               <Link
-                href="/sign-in"
+                href="/signIn"
                 className="block px-3 py-2 nothing-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute hover:text-signal transition-colors"
               >
                 ⏻ Sign out

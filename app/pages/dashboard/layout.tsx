@@ -14,6 +14,7 @@ export default function DashboardLayout({
         {(user)=>(
           <Shell user={user} variant="app" active="app" >
             {children}
+            
           </Shell>
         )}
       </AuthGuard>

@@ -55,7 +55,7 @@ export function ProjectView({ projectId, user }: Props) {
         <div className="absolute inset-0 nothing-dotgrid opacity-40 pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-6 py-12">
           <nav className="nothing-mono text-[11px] uppercase tracking-[0.18em] mb-6 flex items-center gap-2">
-            <Link href="/dashboard" className="text-ink-mute hover:text-signal transition-colors">Workspace</Link>
+            <Link href="/pages/dashboard" className="text-ink-mute hover:text-signal transition-colors">Workspace</Link>
             <span className="text-ink-mute">/</span>
             <span className="text-ink">{project.id.slice(0, 8).toUpperCase()}</span>
           </nav>
