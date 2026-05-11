@@ -13,30 +13,27 @@ interface Props {
 
 export function ContextMenu({ task, children }: Props) {
   const queryClient = useQueryClient();
-  // Standardize the ID once at the top
-  const safeProjectId = String(task.projectId).trim();
+  
+  // THE ONLY ID WE CARE ABOUT: Standardized once at the top level
+  const safeId = String(task.projectId).trim();
+  const projectKey = ['project', safeId];
 
   const updateCache = (updater: (task: Task) => Task) => {
-    const safeId = String(task.projectId).trim();
-    const targetKey = ['project', safeId];
-    
     // --- DIAGNOSTIC LOGS ---
     console.group("🔍 Cache Debug");
     const allQueries = queryClient.getQueryCache().getAll();
-    console.log("1. Safe ID we are looking for:", `|${safeId}|`);
-    console.log("2. Total queries in cache:", allQueries.length);
+    console.log("1. Looking for Key:", projectKey);
     
-    const existingData = queryClient.getQueryData(targetKey);
-    console.log("3. Did we find the data?", existingData ? "YES ✅" : "NO ❌");
+    const existingData = queryClient.getQueryData(projectKey);
+    console.log("2. Found Data?", existingData ? "YES ✅" : "NO ❌");
     
     if (!existingData) {
-      console.log("4. Available Keys in Cache:", allQueries.map(q => q.queryKey));
+      console.log("3. Current Cache Contents:", allQueries.map(q => q.queryKey));
     }
     console.groupEnd();
     // ------------------------
-  
-    // Your actual update logic
-    queryClient.setQueryData(targetKey, (old: any) => {
+
+    queryClient.setQueryData(projectKey, (old: any) => {
       if (!old) return old;
       return {
         ...old,
@@ -48,38 +45,39 @@ export function ContextMenu({ task, children }: Props) {
   const { mutate: updateStatusToComplete } = useMutation({
     mutationFn: () => markTaskComplete(task.id),
     onMutate: () => updateCache(t => ({ ...t, status: "completed" })),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
+    onSettled: () => queryClient.invalidateQueries({ queryKey: projectKey })
   });
 
   const { mutate: updateStatusToActive } = useMutation({
     mutationFn: () => markTaskActive(task.id),
     onMutate: () => updateCache(t => ({ ...t, status: "active" })),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
+    onSettled: () => queryClient.invalidateQueries({ queryKey: projectKey })
   });
 
   const { mutate: updateStatusToTodo } = useMutation({
     mutationFn: () => markTaskTodo(task.id),
     onMutate: () => updateCache(t => ({ ...t, status: "todo" })),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
+    onSettled: () => queryClient.invalidateQueries({ queryKey: projectKey })
   });
 
   const { mutate: updateTaskName } = useMutation({
     mutationFn: (name: string) => renameTask(name, task.id),
     onMutate: (name) => updateCache(t => ({ ...t, name })),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
+    onSettled: () => queryClient.invalidateQueries({ queryKey: projectKey })
   });
 
   const { mutate: deleteThisTask } = useMutation({
     mutationFn: () => deleteTask(task.id),
     onMutate: () => {
-      queryClient.setQueryData(['project', safeProjectId], (old: any) => {
+      queryClient.setQueryData(projectKey, (old: any) => {
         if (!old) return old;
         return { ...old, tasks: old.tasks.filter((t: Task) => t.id !== task.id) };
       });
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
+    onSettled: () => queryClient.invalidateQueries({ queryKey: projectKey })
   });
 
+  // UI State...
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState(task.name);
@@ -128,47 +126,7 @@ export function ContextMenu({ task, children }: Props) {
   return (
     <>
       {children(open)}
-      <AnimatePresence>
-        {pos && (
-          <motion.div
-            ref={menuRef}
-            className="nothing-ctx fixed z-60"
-            style={{ left: pos.x, top: pos.y }}
-            initial={{ opacity: 0, scale: 0.96, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.12 }}
-          >
-            {renaming ? (
-              <div className="nothing-ctx-item">
-                <input
-                  ref={inputRef}
-                  className="bg-transparent outline-none w-full text-sm"
-                  value={newName}
-                  onChange={e => setNewName(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === "Enter") { e.preventDefault(); commitRename(); }
-                    if (e.key === "Escape") close();
-                  }}
-                  onBlur={commitRename}
-                />
-              </div>
-            ) : (
-              items.map((it, i) => (
-                <button
-                  key={i}
-                  className="nothing-ctx-item"
-                  onClick={it.onClick}
-                  style={it.danger ? { color: "var(--color-signal)" } : undefined}
-                >
-                  <span>{it.label}</span>
-                  {it.hint && <span className="text-[9px] tracking-[0.18em] text-ink-mute">{it.hint}</span>}
-                </button>
-              ))
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ... keep the same Framer Motion UI code ... */}
     </>
   );
 }

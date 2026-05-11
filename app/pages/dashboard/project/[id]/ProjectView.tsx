@@ -26,9 +26,9 @@ const COLUMNS: { key: Task["status"]; label: string; n: string }[] = [
 
 export function ProjectView({ projectId, user }: Props) {
   const [taskModal, setTaskModal] = useState(false);
-
+  const safeId =String(projectId).trim()
   const { data: project, isLoading, isError } = useQuery({
-    queryKey: ["projects", String(projectId).trim()],
+    queryKey: ["projects", safeId],
     queryFn: async () => {
       const res = await getProjectById(projectId);
       if (!res || !res.success || !res.data) {
@@ -37,7 +37,7 @@ export function ProjectView({ projectId, user }: Props) {
       return res.data;
     },
   });
-  console.log("BOARD CACHE KEY:", ["project", projectId]);
+  console.log("BOARD CACHE KEY:", ["project", safeId]);
   if (isLoading) return <ProjectLoader />;
   
   if (isError || !project) {
