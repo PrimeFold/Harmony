@@ -85,17 +85,6 @@ export const loginAction = async( email: string, password: string)=>{
       }
     }
 
-    await prisma.refreshToken.deleteMany({
-      where: { userId:existingUser.id }
-    });
-    
-    if(!existingUser){
-      return{
-        success:false,
-        message:"User doesn't exist"
-      }
-    }
-
     const isValid = await bcrypt.compare(validPassword,existingUser.password)
     if(!isValid){
       return{
