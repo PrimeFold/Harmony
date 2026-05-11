@@ -33,10 +33,10 @@ export function NewTaskModal({ project, open, onClose }: TaskProps) {
       return res.data;
     },
     onMutate: async (newVars) => {
-      await queryClient.cancelQueries({ queryKey: ["project", project.id] });
-      const previousProject = queryClient.getQueryData(["project", project.id]);
+      await queryClient.cancelQueries({ queryKey: ["projects", project.id] });
+      const previousProject = queryClient.getQueryData(["projects", project.id]);
 
-      queryClient.setQueryData(["project", project.id], (old: any) => {
+      queryClient.setQueryData(["projects", project.id], (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -60,12 +60,12 @@ export function NewTaskModal({ project, open, onClose }: TaskProps) {
 
     onError: (err, variables, context: any) => {
       if (context?.previousProject) {
-        queryClient.setQueryData(["project", project.id], context.previousProject);
+        queryClient.setQueryData(["projects", project.id], context.previousProject);
       }
       alert(err.message);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["project", project.id] });
+      queryClient.invalidateQueries({ queryKey: ["projects", project.id] });
     },
   });
 

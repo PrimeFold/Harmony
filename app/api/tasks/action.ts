@@ -102,7 +102,8 @@ export const renameTask = async(taskId:string,newName:string)=>{
 
         return{
             success:true,
-            message:"Tasks found !"
+            message:"Tasks found !",
+            data:task
         }
 
     } catch (error) {
