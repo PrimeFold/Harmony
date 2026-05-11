@@ -5,12 +5,13 @@ import { redirect } from "next/navigation";
 import { ProjectView } from "./ProjectView";
 
 type Props = {
-  params: Promise<{ projectId: string }>;
+  params: Promise<{ id: string }>;
 };
 
 export default async function ProjectPage({ params }: Props) {
   const resolvedParams = await params;
-  const projectId = resolvedParams.projectId;
+  const projectId = resolvedParams.id
+  
   
   const cookieStore = await cookies();
   const token = cookieStore.get("access-token")?.value;
