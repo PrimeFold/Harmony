@@ -37,7 +37,7 @@ export function ProjectView({ projectId, user }: Props) {
       return res.data;
     },
   });
-
+  console.log("BOARD CACHE KEY:", ["project", projectId]);
   if (isLoading) return <ProjectLoader />;
   
   if (isError || !project) {
