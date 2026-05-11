@@ -28,7 +28,7 @@ export function ProjectView({ projectId, user }: Props) {
   const [taskModal, setTaskModal] = useState(false);
 
   const { data: project, isLoading, isError } = useQuery({
-    queryKey: ["project", projectId],
+    queryKey: ["projects", projectId],
     queryFn: async () => {
       const res = await getProjectById(projectId);
       if (!res || !res.success || !res.data) {
