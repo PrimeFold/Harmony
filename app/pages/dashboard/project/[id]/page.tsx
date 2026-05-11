@@ -5,10 +5,13 @@ import { redirect } from "next/navigation";
 import { ProjectView } from "./ProjectView";
 
 type Props = {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 };
 
 export default async function ProjectPage({ params }: Props) {
+  const resolvedParams = await params;
+  const projectId = resolvedParams.projectId;
+  
   const cookieStore = await cookies();
   const token = cookieStore.get("access-token")?.value;
   if (!token) redirect("/auth/signIn");
@@ -16,5 +19,5 @@ export default async function ProjectPage({ params }: Props) {
   const user = await getAuthenticatedUser(token);
   if (!user) redirect("/auth/signIn");
 
-  return <ProjectView projectId={params.projectId} user={user} />;
+  return <ProjectView projectId={projectId} user={user} />;
 }
