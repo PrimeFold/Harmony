@@ -1,5 +1,6 @@
 "use client";
-
+import React from 'react'
+import type { ReactNode, InputHTMLAttributes } from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -77,7 +78,7 @@ function FormShell({ title, hint, children, onSubmit, isPending, onReset }: {
   title: string;
   hint: string;
   children: React.ReactNode;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e:React.FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
   onReset?: () => void;
 }) {
@@ -132,7 +133,7 @@ function ProfileForm({ user }: { user: User }) {
     onSuccess: () => alert("Profile updated")
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name.trim()) return alert("Name required");
     mutate();
@@ -187,7 +188,7 @@ function SecurityForm({ user }: { user: User }) {
     onError: (err: any) => alert(err.message)
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (next !== confirm) return alert("Passwords do not match");
     if (next.length < 8) return alert("Password must be at least 8 characters");
