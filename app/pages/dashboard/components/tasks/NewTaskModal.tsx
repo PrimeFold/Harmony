@@ -16,6 +16,7 @@ type TaskProps = {
 };
 
 export function NewTaskModal({ project, open, onClose }: TaskProps) {
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState<Task["status"]>("todo");
 
@@ -23,8 +24,6 @@ export function NewTaskModal({ project, open, onClose }: TaskProps) {
     setTitle("");
     setStatus("todo");
   };
-
-  const queryClient = useQueryClient();
 
   const { mutate: createTaskMutation } = useMutation({
     mutationFn: async (vars: { name: string; projectId: string; status: Task["status"] }) => {
