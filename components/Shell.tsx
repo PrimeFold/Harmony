@@ -87,7 +87,7 @@ function AuthedCluster({ user }: { user: User }) {
   return (
     <>
       <Link
-        href="/pages/settings"
+        href="/pages/settingsPage"
         className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 nothing-hairline rounded-sm hover:border-signal transition-colors group"
         aria-label="Account"
       >

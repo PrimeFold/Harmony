@@ -10,8 +10,9 @@ import {
   motion,
   AnimatePresence,
 } from "framer-motion";
+import { User } from "@/app/types/user";
 
-export function UserDock() {
+export function UserDock({user}:{user:User}) {
   const [open, setOpen] =
     useState(false);
 
@@ -122,14 +123,14 @@ export function UserDock() {
               </p>
 
               <p className="nothing-mono text-xs mt-1 truncate">
-                guest@halftone.dev
+                {user.username}
               </p>
             </div>
 
             <nav className="p-2">
 
               <Link
-                href="/pages/settings"
+                href="/pages/settingsPage"
                 className="block px-3 py-2 nothing-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute hover:text-signal hover:bg-[color-mix(in_oklab,var(--color-signal)_6%,transparent)] transition-colors"
               >
                 ⚙ Settings
@@ -145,7 +146,7 @@ export function UserDock() {
               <div className="my-1 nothing-hairline-b" />
 
               <Link
-                href="/signIn"
+                href="/auth/signIn"
                 className="block px-3 py-2 nothing-mono text-[11px] uppercase tracking-[0.18em] text-ink-mute hover:text-signal transition-colors"
               >
                 ⏻ Sign out
