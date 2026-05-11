@@ -13,7 +13,7 @@ export function ContextMenu({ task, children }: Props) {
   const queryClient = useQueryClient();
 
   const updateCache = (updater: (task: Task) => Task) => {
-    queryClient.setQueryData(['project', task.projectId], (old: any) => {
+    queryClient.setQueryData(['projects', task.projectId], (old: any) => {
       if (!old) return old;
       return {
         ...old,
@@ -28,10 +28,13 @@ export function ContextMenu({ task, children }: Props) {
       console.log('=== COMPLETE ===');
       console.log('task:', task);
       console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache:', queryClient.getQueryData(['projects', task.projectId]));
       updateCache(t => ({ ...t, status: "completed" }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache after:', queryClient.getQueryData(['projects', task.projectId]));
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['projects',task.projectId]})
+    }
   });
   
   const { mutate: updateStatusToActive } = useMutation({
@@ -40,10 +43,13 @@ export function ContextMenu({ task, children }: Props) {
       console.log('=== ACTIVE ===');
       console.log('task:', task);
       console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache:', queryClient.getQueryData(['projects', task.projectId]));
       updateCache(t => ({ ...t, status: "active" }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache after:', queryClient.getQueryData(['projects', task.projectId]));
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['projects',task.projectId]})
+    }
   });
   
   const { mutate: updateStatusToTodo } = useMutation({
@@ -52,10 +58,13 @@ export function ContextMenu({ task, children }: Props) {
       console.log('=== TODO ===');
       console.log('task:', task);
       console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache:', queryClient.getQueryData(['projects', task.projectId]));
       updateCache(t => ({ ...t, status: "todo" }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache after:', queryClient.getQueryData(['projects', task.projectId]));
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['projects',task.projectId]})
+    }
   });
   
   const { mutate: updateTaskName } = useMutation({
@@ -64,10 +73,13 @@ export function ContextMenu({ task, children }: Props) {
       console.log('=== RENAME ===');
       console.log('task:', task);
       console.log('new name:', name);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache:', queryClient.getQueryData(['projects', task.projectId]));
       updateCache(t => ({ ...t, name }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache after:', queryClient.getQueryData(['projects', task.projectId]));
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['projects',task.projectId]})
+    }
   });
   
   const { mutate: deleteThisTask } = useMutation({
@@ -76,13 +88,16 @@ export function ContextMenu({ task, children }: Props) {
       console.log('=== DELETE ===');
       console.log('task:', task);
       console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache:', queryClient.getQueryData(['projects', task.projectId]));
       queryClient.setQueryData(['project', task.projectId], (old: any) => {
         if (!old) return old;
         return { ...old, tasks: old.tasks.filter((t: Task) => t.id !== task.id) };
       });
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
+      console.log('cache after:', queryClient.getQueryData(['projects', task.projectId]));
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['projects',task.projectId]})
+    }
   });
   const [pos, setPos]           = useState<{ x: number; y: number } | null>(null);
   const [renaming, setRenaming] = useState(false);
