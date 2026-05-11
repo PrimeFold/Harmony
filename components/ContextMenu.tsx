@@ -126,7 +126,54 @@ export function ContextMenu({ task, children }: Props) {
   return (
     <>
       {children(open)}
-      {/* ... keep the same Framer Motion UI code ... */}
-    </>
-  );
-}
+          <AnimatePresence>
+            {pos && (
+              <motion.div
+                ref={menuRef}
+                className="fixed z-[100] min-w-[160px] bg-white border border-neutral-200 shadow-xl rounded-lg overflow-hidden p-1"
+                style={{ left: pos.x, top: pos.y }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.1 }}
+              >
+                {renaming ? (
+                  <div className="p-2">
+                    <input
+                      ref={inputRef}
+                      className="w-full bg-neutral-100 border-none outline-none rounded px-2 py-1 text-sm"
+                      value={newName}
+                      onChange={e => setNewName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") { e.preventDefault(); commitRename(); }
+                        if (e.key === "Escape") close();
+                      }}
+                      onBlur={commitRename}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    {items.map((it, i) => (
+                      <button
+                        key={i}
+                        className="flex items-center justify-between w-full px-3 py-2 text-sm text-left hover:bg-neutral-100 transition-colors rounded-md"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          it.onClick();
+                        }}
+                        style={it.danger ? { color: "#ef4444" } : { color: "#171717" }}
+                      >
+                        <span>{it.label}</span>
+                        {it.hint && <span className="text-[10px] opacity-40 ml-4">{it.hint}</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      );
+    }
+
+ 
