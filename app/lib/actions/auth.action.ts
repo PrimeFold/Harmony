@@ -1,4 +1,4 @@
-import { forgotPasswordAction, loginAction, logoutAction, signUpAction } from "@/app/api/auth/action"
+import { changeEmailAction, changePasswordAction, changeUsernameAction, forgotPasswordAction, loginAction, logoutAction, signUpAction } from "@/app/api/auth/action"
 
 export const login = async(email:string,password:string)=>{
     const data = await loginAction(email,password);
@@ -21,4 +21,19 @@ export const resetPassword = async(email:string,password:string)=>{
     const {data} = await forgotPasswordAction(email,password);
     return data;
 }
+
+export const changeUsername = async(username:string,userId:string)=>{
+    const data = await changeUsernameAction(username,userId);
+    return data;
+}
+
+export const changeEmail = async(email:string,userId:string)=>{
+    const data= await changeEmailAction(email,userId);
+    return data;
+}
+export const changePassword = async(currentPassword:string,newPassword:string,userId:string)=>{
+    const data = await changePasswordAction(currentPassword,newPassword,userId);
+    return data;
+}
+
 

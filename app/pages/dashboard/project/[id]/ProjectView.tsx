@@ -37,14 +37,13 @@ export function ProjectView({ projectId, user }: Props) {
       return res.data;
     },
   });
-  console.log("BOARD CACHE KEY:", ["project", safeId]);
   if (isLoading) return <ProjectLoader />;
   
   if (isError || !project) {
     return (
       <div className="nothing-error py-24 text-center nothing-mono">
         <p className="text-signal">// Project Not Found</p>
-        <Link href="/dashboard" className="nothing-btn mt-4 inline-block">Return to Workspace</Link>
+        <Link href="/pages/dashboard" className="nothing-btn mt-4 inline-block">Return to Workspace</Link>
       </div>
     );
   }

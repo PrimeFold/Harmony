@@ -19,14 +19,6 @@ export function ContextMenu({ task, children }: Props) {
   const projectKey = ['project', safeId];
 
   const updateCache = (updater: (task: Task) => Task) => {
-    // Keep logs for this last stretch of debugging
-    console.group("🔍 Cache Debug");
-    const allQueries = queryClient.getQueryCache().getAll();
-    console.log("Looking for:", projectKey);
-    const existingData = queryClient.getQueryData(projectKey);
-    console.log("Found?", existingData ? "YES ✅" : "NO ❌");
-    console.groupEnd();
-
     queryClient.setQueryData(projectKey, (old: any) => {
       if (!old) return old;
       return {

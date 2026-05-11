@@ -262,3 +262,133 @@ export const forgotPasswordAction = async (email: string, newPassword: string) =
 };
 
 
+export const changeUsernameAction = async(username:string,userId:string)=>{
+
+  try {
+    const user = await  prisma.user.update({
+      where:{id:userId},
+      data:{
+        username:username
+      },
+      select:{
+        id:true,
+        email:true,
+        username:true,
+      }
+    })
+
+    if(!user){
+      return{
+        success:false,
+        message:"Couldn't update username"
+      }
+    }
+    return{
+      success:true,
+      message:"Username updated successfully!",
+      data:user
+    }
+
+  } catch (error) {
+      return{
+        success:false,
+        message:(error as Error).message
+    }
+  }
+}
+export const changeEmailAction = async(email:string,userId:string)=>{
+
+  try {
+    const user = await  prisma.user.update({
+      where:{id:userId},
+      data:{
+        email:email
+      },
+      select:{
+        id:true,
+        email:true,
+        username:true,
+      }
+    })
+
+    if(!user){
+      return{
+        success:false,
+        message:"Couldn't update email"
+      }
+    }
+    return{
+      success:true,
+      message:"Email updated successfully!",
+      data:user
+    }
+
+  } catch (error) {
+      return{
+        success:false,
+        message:(error as Error).message
+    }
+  }
+}
+
+export const changePasswordAction = async(currentPassword:string,newPassword:string,userId:string)=>{
+
+  try {
+
+    const currentUser = await prisma.user.findUnique({
+      where:{id:userId},
+      select:{
+        password:true
+      }
+    })
+
+    if(!currentUser){
+      return {
+        success:false,
+        message:"User not found !"
+      }
+    }
+
+    const isValid = await bcrypt.compare(currentPassword,currentUser.password)
+
+    if(!isValid){
+      return{
+        success:false,
+        message:"Invalid current password",
+        data:null
+      }
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword,12);
+    const updatedUser = await  prisma.user.update({
+      where:{id:userId},
+      data:{
+        password:newPasswordHash
+      },
+      select:{
+        id:true,
+        email:true,
+        username:true,
+      }
+    })
+
+    if(!updatedUser){
+      return{
+        success:false,
+        message:"Couldn't update email"
+      }
+    }
+    return{
+      success:true,
+      message:"Email updated successfully!",
+      data:updatedUser
+    }
+
+  } catch (error) {
+      return{
+        success:false,
+        message:(error as Error).message
+    }
+  }
+}
+
