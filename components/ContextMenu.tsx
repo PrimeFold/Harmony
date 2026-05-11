@@ -17,7 +17,26 @@ export function ContextMenu({ task, children }: Props) {
   const safeProjectId = String(task.projectId).trim();
 
   const updateCache = (updater: (task: Task) => Task) => {
-    queryClient.setQueryData(['project', safeProjectId], (old: any) => {
+    const safeId = String(task.projectId).trim();
+    const targetKey = ['project', safeId];
+    
+    // --- DIAGNOSTIC LOGS ---
+    console.group("🔍 Cache Debug");
+    const allQueries = queryClient.getQueryCache().getAll();
+    console.log("1. Safe ID we are looking for:", `|${safeId}|`);
+    console.log("2. Total queries in cache:", allQueries.length);
+    
+    const existingData = queryClient.getQueryData(targetKey);
+    console.log("3. Did we find the data?", existingData ? "YES ✅" : "NO ❌");
+    
+    if (!existingData) {
+      console.log("4. Available Keys in Cache:", allQueries.map(q => q.queryKey));
+    }
+    console.groupEnd();
+    // ------------------------
+  
+    // Your actual update logic
+    queryClient.setQueryData(targetKey, (old: any) => {
       if (!old) return old;
       return {
         ...old,
