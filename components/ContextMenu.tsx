@@ -14,24 +14,18 @@ interface Props {
 export function ContextMenu({ task, children }: Props) {
   const queryClient = useQueryClient();
   
-  // THE ONLY ID WE CARE ABOUT: Standardized once at the top level
+  // The standardized key logic
   const safeId = String(task.projectId).trim();
   const projectKey = ['project', safeId];
 
   const updateCache = (updater: (task: Task) => Task) => {
-    // --- DIAGNOSTIC LOGS ---
+    // Keep logs for this last stretch of debugging
     console.group("🔍 Cache Debug");
     const allQueries = queryClient.getQueryCache().getAll();
-    console.log("1. Looking for Key:", projectKey);
-    
+    console.log("Looking for:", projectKey);
     const existingData = queryClient.getQueryData(projectKey);
-    console.log("2. Found Data?", existingData ? "YES ✅" : "NO ❌");
-    
-    if (!existingData) {
-      console.log("3. Current Cache Contents:", allQueries.map(q => q.queryKey));
-    }
+    console.log("Found?", existingData ? "YES ✅" : "NO ❌");
     console.groupEnd();
-    // ------------------------
 
     queryClient.setQueryData(projectKey, (old: any) => {
       if (!old) return old;
@@ -42,6 +36,7 @@ export function ContextMenu({ task, children }: Props) {
     });
   };
 
+  // Mutations
   const { mutate: updateStatusToComplete } = useMutation({
     mutationFn: () => markTaskComplete(task.id),
     onMutate: () => updateCache(t => ({ ...t, status: "completed" })),
@@ -77,7 +72,6 @@ export function ContextMenu({ task, children }: Props) {
     onSettled: () => queryClient.invalidateQueries({ queryKey: projectKey })
   });
 
-  // UI State...
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState(task.name);
@@ -86,6 +80,7 @@ export function ContextMenu({ task, children }: Props) {
 
   const open = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setRenaming(false);
     setNewName(task.name);
     setPos({ x: e.clientX, y: e.clientY });
@@ -126,54 +121,50 @@ export function ContextMenu({ task, children }: Props) {
   return (
     <>
       {children(open)}
-          <AnimatePresence>
-            {pos && (
-              <motion.div
-                ref={menuRef}
-                className="fixed z-[100] min-w-[160px] bg-white border border-neutral-200 shadow-xl rounded-lg overflow-hidden p-1"
-                style={{ left: pos.x, top: pos.y }}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.1 }}
-              >
-                {renaming ? (
-                  <div className="p-2">
-                    <input
-                      ref={inputRef}
-                      className="w-full bg-neutral-100 border-none outline-none rounded px-2 py-1 text-sm"
-                      value={newName}
-                      onChange={e => setNewName(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === "Enter") { e.preventDefault(); commitRename(); }
-                        if (e.key === "Escape") close();
-                      }}
-                      onBlur={commitRename}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col">
-                    {items.map((it, i) => (
-                      <button
-                        key={i}
-                        className="flex items-center justify-between w-full px-3 py-2 text-sm text-left hover:bg-neutral-100 transition-colors rounded-md"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          it.onClick();
-                        }}
-                        style={it.danger ? { color: "#ef4444" } : { color: "#171717" }}
-                      >
-                        <span>{it.label}</span>
-                        {it.hint && <span className="text-[10px] opacity-40 ml-4">{it.hint}</span>}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
+      <AnimatePresence>
+        {pos && (
+          <motion.div
+            ref={menuRef}
+            className="nothing-ctx fixed z-60"
+            style={{ left: pos.x, top: pos.y }}
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.12 }}
+          >
+            {renaming ? (
+              <div className="nothing-ctx-item">
+                <input
+                  ref={inputRef}
+                  className="bg-transparent outline-none w-full text-sm"
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") { e.preventDefault(); commitRename(); }
+                    if (e.key === "Escape") close();
+                  }}
+                  onBlur={commitRename}
+                />
+              </div>
+            ) : (
+              items.map((it, i) => (
+                <button
+                  key={i}
+                  className="nothing-ctx-item"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    it.onClick();
+                  }}
+                  style={it.danger ? { color: "var(--color-signal)" } : undefined}
+                >
+                  <span>{it.label}</span>
+                  {it.hint && <span className="text-[9px] tracking-[0.18em] text-ink-mute">{it.hint}</span>}
+                </button>
+              ))
             )}
-          </AnimatePresence>
-        </>
-      );
-    }
-
- 
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
