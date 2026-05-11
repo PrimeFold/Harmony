@@ -1,3 +1,4 @@
+
 # ◉ Harmony
 
 **Less interface. More signal.**
@@ -147,9 +148,9 @@ Not to decorate emptiness.
 
 ```txt
 /                           landing
-/auth/signIn                    authentication
-/auth/signUp                    authentication
-/auth/forgotPassword            authentication
+/auth/signIn                authentication
+/auth/signUp                authentication
+/auth/forgotPassword        authentication
 
 /dashboard                  projects overview
 
@@ -187,8 +188,9 @@ app/
 │
 ├── styles.css
 │
-└── 
+└──
 ```
+
 ---
 
 ## `// 06` — local setup
@@ -210,13 +212,9 @@ http://localhost:3000
 ---
 
 ## `// 07` — current status
-
+Completed 
 ```txt
-[■■■■■■■■■■]  ui system
-[■■■■■■■■··]  interaction layer
-[■■■■■·····]  component architecture
-[■■········]  backend integration
-[··········]  authentication logic
+
 ```
 
 ---
@@ -230,6 +228,194 @@ http://localhost:3000
 - Activity timelines
 - Drag-and-drop task ordering
 - Mobile interaction refinement
+
+---
+
+## `// 09` — the refetch wall & next.js 15 migration
+
+After the first functional Kanban board was completed, Harmony hit a synchronization problem that looked deceptively simple:
+
+```txt
+database updated successfully
+ui stayed frozen until manual refresh
+```
+
+At first, the issue looked like failed cache invalidation.
+
+It wasn't.
+
+---
+
+### The "Ghost Key" problem
+
+The root cause turned out to be an interaction between:
+
+- Next.js 15 asynchronous route params
+- TanStack Query cache keys
+
+In Next.js 15, route params are sometimes delivered as wrapped objects or Proxy-like values rather than primitive strings.
+
+That became catastrophic once those values were used inside query keys.
+
+Example:
+
+```ts
+// board query
+["project", Proxy(Object)]
+
+// mutation query
+["project", "cmoz..."]
+```
+
+Even though both values represented the same project ID, TanStack Query treated them as entirely different cache entries.
+
+Which meant:
+
+```txt
+mutation updates → cache A
+ui reads from    → cache B
+```
+
+The result was endless undefined cache reads and UI updates that only appeared after `F5`.
+
+A classic "everything works except the interface" bug.
+
+---
+
+### Deterministic query-key sanitation
+
+The solution was aggressively simple:
+
+force every project identifier into a deterministic primitive string before touching the cache.
+
+```ts
+const safeId = String(projectId).trim();
+
+const queryKey = ["project", safeId];
+```
+
+This pattern was standardized across:
+
+- Board
+- ContextMenu
+- NewTaskModal
+- task mutations
+- settings mutations
+
+Once every layer referenced the same exact key shape, cache synchronization immediately stabilized.
+
+---
+
+### Moving to optimistic updates
+
+With reliable cache hits finally working, Harmony moved away from heavy refetching and into optimistic UI updates.
+
+#### Before
+
+```txt
+click action
+→ wait for server
+→ refetch project
+→ rerender ui
+```
+
+#### After
+
+```txt
+click action
+→ ui updates instantly
+→ server sync happens in background
+```
+
+Tasks now transition between:
+
+```txt
+Todo → Active → Done
+```
+
+immediately after interaction, making the board feel significantly more alive.
+
+---
+
+### Rollback safety
+
+Optimistic updates are fast.
+
+They're also dangerous if not protected properly.
+
+Every mutation now includes rollback logic through `onError` handlers.
+
+If a request fails:
+
+```txt
+optimistic state → reverted
+```
+
+This guarantees the interface never lies about the actual server state.
+
+---
+
+### Unified settings synchronization
+
+The same synchronization architecture was extended into the Settings system.
+
+Reactive forms were added for:
+
+- Profile
+- Account
+- Security
+
+Mutations invalidate the global:
+
+```ts
+['user']
+```
+
+query key, allowing profile changes to instantly propagate across:
+
+- Shell
+- Sidebar
+- UserDock
+
+without requiring a full page refresh.
+
+---
+
+### Post-migration architecture
+
+```txt
+next.js 15       ── async route params
+tanstack query   ── deterministic string query keys
+framer motion    ── layout-aware transitions
+optimistic ui    ── instant task movement
+rollback logic   ── state recovery on failure
+```
+
+---
+
+### What changed?
+
+The migration fundamentally changed how Harmony feels.
+
+Before:
+
+```txt
+functional but static
+```
+
+After:
+
+```txt
+reactive
+instant
+state-synchronized
+```
+
+Ironically, the hardest bug in the project wasn't rendering, animation, or styling.
+
+It was two values that looked identical in the console while secretly being different underneath.
+
+JavaScript moment.
 
 ---
 
@@ -337,9 +523,9 @@ Instead of wrapping the entire application with authentication logic, Harmony pr
 The authentication layer is attached to the protected layout:
 
 ```txt
-/dashboard
-/projects/[projectId]
-/settings
+/ dashboard
+/ projects/[projectId]
+/ settings
 ```
 
 This keeps public surfaces like:
@@ -373,8 +559,6 @@ TanStack Query handles:
 
 The separation keeps authentication infrastructure independent from application data flow.
 
-
-
 ---
 
 ### Final architecture
@@ -390,11 +574,9 @@ Refresh tokens  → silent session recovery
 
 The result is a secure authentication flow with minimal client-side complexity and close to zero visual flicker during protected navigation.
 
-
+---
 
 `signal level: ◉`
 
 **Harmony** — clarity over noise.
-
-
-
+````
