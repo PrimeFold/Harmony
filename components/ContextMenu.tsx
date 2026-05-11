@@ -13,6 +13,16 @@ export function ContextMenu({ task, children }: Props) {
   const queryClient = useQueryClient();
 
   const updateCache = (updater: (task: Task) => Task) => {
+    const allKeys = queryClient.getQueryCache().getAll().map(cache => cache.queryKey);
+    console.log("ALL CACHE KEYS PRESENT:", allKeys);
+
+    // 2. Try to find the board key manually
+    const targetKey = ["project", task.projectId];
+    console.log("LOOKING FOR:", targetKey);
+
+    const match = allKeys.find(k => JSON.stringify(k) === JSON.stringify(targetKey));
+    console.log("DID WE FIND A STRING MATCH?", !!match);
+    
     queryClient.setQueryData(['project', task.projectId], (old: any) => {
       if (!old) return old;
       return {
