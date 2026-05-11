@@ -34,7 +34,7 @@ export function NewProjectModal({ user, open, onClose }: Props) {
   };
 
   const queryClient = useQueryClient();
-
+  
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       const deadline = expireAt

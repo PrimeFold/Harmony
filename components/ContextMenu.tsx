@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,109 +13,59 @@ interface Props {
 
 export function ContextMenu({ task, children }: Props) {
   const queryClient = useQueryClient();
+  // Standardize the ID once at the top
+  const safeProjectId = String(task.projectId).trim();
 
   const updateCache = (updater: (task: Task) => Task) => {
-    const allKeys = queryClient.getQueryCache().getAll().map(cache => cache.queryKey);
-    console.log("ALL CACHE KEYS PRESENT:", allKeys);
-
-    // 2. Try to find the board key manually
-    const targetKey = ["project", task.projectId];
-    console.log("LOOKING FOR:", targetKey);
-
-    const match = allKeys.find(k => JSON.stringify(k) === JSON.stringify(targetKey));
-    console.log("DID WE FIND A STRING MATCH?", !!match);
-    
-    queryClient.setQueryData(['project', task.projectId], (old: any) => {
+    queryClient.setQueryData(['project', safeProjectId], (old: any) => {
       if (!old) return old;
       return {
         ...old,
-        tasks: old.tasks.map((t: Task) => t.id === task.id ? updater(t) : t),
+        tasks: old.tasks.map((t: Task) => (t.id === task.id ? updater(t) : t)),
       };
     });
   };
 
   const { mutate: updateStatusToComplete } = useMutation({
     mutationFn: () => markTaskComplete(task.id),
-    onMutate: () => {
-      console.log('=== COMPLETE ===');
-      console.log('task:', task);
-      console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
-      updateCache(t => ({ ...t, status: "completed" }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
-    },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['project',task.projectId]})
-    }
+    onMutate: () => updateCache(t => ({ ...t, status: "completed" })),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
   });
-  
+
   const { mutate: updateStatusToActive } = useMutation({
     mutationFn: () => markTaskActive(task.id),
-    onMutate: () => {
-      console.log('=== ACTIVE ===');
-      console.log('task:', task);
-      console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
-      updateCache(t => ({ ...t, status: "active" }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
-    },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['project',task.projectId]})
-    }
+    onMutate: () => updateCache(t => ({ ...t, status: "active" })),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
   });
-  
+
   const { mutate: updateStatusToTodo } = useMutation({
     mutationFn: () => markTaskTodo(task.id),
-    onMutate: () => {
-      console.log('=== TODO ===');
-      console.log('task:', task);
-      console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
-      updateCache(t => ({ ...t, status: "todo" }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
-    },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['project',task.projectId]})
-    }
+    onMutate: () => updateCache(t => ({ ...t, status: "todo" })),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
   });
-  
+
   const { mutate: updateTaskName } = useMutation({
     mutationFn: (name: string) => renameTask(name, task.id),
-    onMutate: (name) => {
-      console.log('=== RENAME ===');
-      console.log('task:', task);
-      console.log('new name:', name);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
-      updateCache(t => ({ ...t, name }));
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
-    },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['project',task.projectId]})
-    }
+    onMutate: (name) => updateCache(t => ({ ...t, name })),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
   });
-  
+
   const { mutate: deleteThisTask } = useMutation({
     mutationFn: () => deleteTask(task.id),
     onMutate: () => {
-      console.log('=== DELETE ===');
-      console.log('task:', task);
-      console.log('projectId:', task.projectId);
-      console.log('cache:', queryClient.getQueryData(['project', task.projectId]));
-      queryClient.setQueryData(['project', task.projectId], (old: any) => {
+      queryClient.setQueryData(['project', safeProjectId], (old: any) => {
         if (!old) return old;
         return { ...old, tasks: old.tasks.filter((t: Task) => t.id !== task.id) };
       });
-      console.log('cache after:', queryClient.getQueryData(['project', task.projectId]));
     },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['project',task.projectId]})
-    }
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['project', safeProjectId] })
   });
-  const [pos, setPos]           = useState<{ x: number; y: number } | null>(null);
+
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [renaming, setRenaming] = useState(false);
-  const [newName, setNewName]   = useState(task.name);
-  const inputRef                = useRef<HTMLInputElement>(null);
-  const menuRef                 = useRef<HTMLDivElement>(null);
+  const [newName, setNewName] = useState(task.name);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const open = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -121,6 +73,7 @@ export function ContextMenu({ task, children }: Props) {
     setNewName(task.name);
     setPos({ x: e.clientX, y: e.clientY });
   };
+  
   const close = () => { setPos(null); setRenaming(false); };
 
   const commitRename = () => {
@@ -133,17 +86,22 @@ export function ContextMenu({ task, children }: Props) {
 
   useEffect(() => {
     if (!pos) return;
-    const onMouse = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) close(); };
-    const onKey   = (e: KeyboardEvent) => e.key === "Escape" && close();
+    const onMouse = (e: MouseEvent) => { 
+        if (menuRef.current && !menuRef.current.contains(e.target as Node)) close(); 
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("mousedown", onMouse);
     window.addEventListener("keydown", onKey);
-    return () => { window.removeEventListener("mousedown", onMouse); window.removeEventListener("keydown", onKey); };
+    return () => { 
+        window.removeEventListener("mousedown", onMouse); 
+        window.removeEventListener("keydown", onKey); 
+    };
   }, [pos]);
 
   const items = [
     task.status !== "completed" && { label: "Mark complete", onClick: () => { updateStatusToComplete(); close(); } },
-    task.status !== "active"   && { label: "Mark active",   onClick: () => { updateStatusToActive();   close(); } },
-    task.status !== "todo"     && { label: "Mark todo",     onClick: () => { updateStatusToTodo();     close(); } },
+    task.status !== "active" && { label: "Mark active", onClick: () => { updateStatusToActive(); close(); } },
+    task.status !== "todo" && { label: "Mark todo", onClick: () => { updateStatusToTodo(); close(); } },
     { label: "Rename", onClick: () => setRenaming(true) },
     { label: "Delete", onClick: () => { deleteThisTask(); close(); }, danger: true, hint: "DEL" },
   ].filter(Boolean) as { label: string; onClick: () => void; hint?: string; danger?: boolean }[];
