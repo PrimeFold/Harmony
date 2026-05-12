@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const PROTECTED_ROUTES = ['/dashboard', '/projects', '/settings'];
+const PROTECTED_ROUTES = ['/pages/dashboard'];
+
+function isProtectedPath(pathname: string) {
+  return PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
 
 export async function middleware(request: NextRequest) {
  
   const { pathname } = request.nextUrl;
 
-  // Check if the current path matches any of your protected routes
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+  // Match exact route and nested paths while avoiding partial string collisions.
+  const isProtectedRoute = isProtectedPath(pathname);
 
   if (isProtectedRoute) {
     const accessToken = request.cookies.get('access-token')?.value;

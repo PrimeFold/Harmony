@@ -38,6 +38,8 @@ function TopBar({ user, active, variant }: { user?: User; active: ShellProps["ac
   return (
     <header className="nothing-hairline-b sticky top-0 z-40 bg-background/85 backdrop-blur">
       <div className="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">
+        {variant=== "landing" ? (
+          
         <Link href="/" className="flex items-center gap-3">
           <DotMark />
           <span className="nothing-mono text-xs uppercase tracking-[0.22em]">
@@ -50,6 +52,20 @@ function TopBar({ user, active, variant }: { user?: User; active: ShellProps["ac
             v0.1
           </span>
         </Link>
+        ):(
+          <Link href="/pages/dashboard" className="flex items-center gap-3">
+            <DotMark />
+            <span className="nothing-mono text-xs uppercase tracking-[0.22em]">
+              Harmony
+            </span>
+            <span
+              className="nothing-mono text-[9px] uppercase tracking-[0.22em] px-1.5 py-0.5 ml-1"
+              style={{ background: "var(--color-signal)", color: "oklch(1 0 0)" }}
+            >
+              v0.1
+            </span>
+          </Link>
+        )}
 
         <nav className="flex items-center gap-1">
           {variant === "landing" ? (
