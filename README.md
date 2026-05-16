@@ -37,8 +37,6 @@ The current focus is:
 - state modelling
 - scalable route structure
 
-The backend/data layer is intentionally incomplete for now.
-
 ---
 
 ## `// 01` — features
